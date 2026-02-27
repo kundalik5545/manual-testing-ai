@@ -50,18 +50,16 @@ export function SidebarNav({
 
       <aside
         className={cn(
-          'bg-card fixed inset-y-0 left-0 z-40 mt-14 flex w-72 flex-col border-r transition-transform sm:mt-16 md:static md:mt-0 md:translate-x-0',
+          'bg-card fixed inset-y-0 left-0 z-40 mt-14 flex w-64 flex-col border-r transition-transform sm:mt-16 md:sticky md:top-16 md:mt-0 md:h-[calc(100vh-4rem)] md:shrink-0 md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
         aria-label="Report sections"
       >
-        <div className="flex items-center justify-between border-b px-3 py-3">
-          <p className="text-sm font-medium">Sections</p>
+        <div className="flex justify-end px-2 py-2 md:hidden">
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="md:hidden"
             onClick={onClose}
             aria-label="Close sidebar"
           >
@@ -69,7 +67,10 @@ export function SidebarNav({
           </Button>
         </div>
 
-        <nav className="overflow-y-auto p-2" aria-label="Section navigation">
+        <nav
+          className="overflow-y-auto px-2 pb-2 md:pt-2"
+          aria-label="Section navigation"
+        >
           <ul className="space-y-1">
             {sections.map((section, index) => {
               const isActive = section.id === activeSection;

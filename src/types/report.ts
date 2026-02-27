@@ -26,7 +26,7 @@ export interface ReportData {
   testScenarios?: Array<{
     testCaseId: string;
     testCaseName: string;
-    description: string;
+    description?: string;
     category?: string;
   }>;
   databaseQueries?: Array<{

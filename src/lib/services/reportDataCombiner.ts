@@ -11,7 +11,8 @@ type ResourceName =
   | 'testCases'
   | 'testScenarios'
   | 'tableOfContents'
-  | 'databaseQueries';
+  | 'databaseQueries'
+  | 'sqlScripts';
 
 type ResourceStatus = 'loading' | 'loaded' | 'missing' | 'failed';
 
@@ -72,6 +73,46 @@ function findFileByName(
   return undefined;
 }
 
+function buildPublicCandidatePaths(
+  targetName: string,
+  moduleFolderPath?: string,
+): string[] {
+  const normalized = targetName.split(/[\\/]/).pop() ?? targetName;
+  const moduleFolder = moduleFolderPath?.replace(/^\/+|\/+$/g, '');
+
+  const candidates = [
+    `/html-reports/${normalized}`,
+    `/${normalized}`,
+  ];
+
+  if (moduleFolder) {
+    candidates.unshift(`/${moduleFolder}/${normalized}`);
+    candidates.unshift(`/html-reports/${moduleFolder}/${normalized}`);
+  }
+
+  return Array.from(new Set(candidates));
+}
+
+async function fetchTextFromPublicPaths(
+  targetName: string,
+  moduleFolderPath?: string,
+): Promise<string | null> {
+  const candidates = buildPublicCandidatePaths(targetName, moduleFolderPath);
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        return await response.text();
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
 function extractTestCaseArray(value: unknown): TestCaseInput[] {
   if (Array.isArray(value)) {
     return value.map((entry) => testCaseInputSchema.parse(entry));
@@ -112,6 +153,42 @@ function extractScenarioArray(value: unknown): ReportInput['testScenarios'] {
   );
 }
 
+function parseSqlScriptsFromJsContent(content: string): Record<string, string> {
+  const scripts: Record<string, string> = {};
+  const pattern = /([A-Za-z0-9_]+)\s*:\s*`([\s\S]*?)`\s*,?/g;
+
+  for (const match of content.matchAll(pattern)) {
+    const queryId = match[1];
+    const sqlScript = match[2].trim();
+    if (queryId && sqlScript) {
+      scripts[queryId] = sqlScript;
+    }
+  }
+
+  return scripts;
+}
+
+async function extractSqlScriptsFromFile(
+  fileMap: Map<string, File>,
+  moduleFolderPath?: string,
+): Promise<Record<string, string> | null> {
+  const sqlScriptsFile = findFileByName(fileMap, 'sql-scripts.js');
+  if (sqlScriptsFile) {
+    const jsText = await sqlScriptsFile.text();
+    return parseSqlScriptsFromJsContent(jsText);
+  }
+
+  const fetchedJsText = await fetchTextFromPublicPaths(
+    'sql-scripts.js',
+    moduleFolderPath,
+  );
+  if (!fetchedJsText) {
+    return null;
+  }
+
+  return parseSqlScriptsFromJsContent(fetchedJsText);
+}
+
 export async function combineReportData(
   mainData: unknown,
   fileMap: Map<string, File>,
@@ -143,10 +220,24 @@ export async function combineReportData(
       loadedResources.push('testCases');
       onResourceUpdate?.('testCases', 'loaded');
     } else {
-      warnings.push(
-        `Missing referenced test cases file: ${parsedMain.testCasesFile}`,
+      const fetchedTestCasesText = await fetchTextFromPublicPaths(
+        parsedMain.testCasesFile,
+        parsedMain.moduleFolderPath,
       );
-      onResourceUpdate?.('testCases', 'missing');
+
+      if (fetchedTestCasesText) {
+        const externalTestCases = extractTestCaseArray(
+          JSON.parse(fetchedTestCasesText),
+        );
+        testCases = externalTestCases.map(normalizeTestCase);
+        loadedResources.push('testCases');
+        onResourceUpdate?.('testCases', 'loaded');
+      } else {
+        warnings.push(
+          `Missing referenced test cases file: ${parsedMain.testCasesFile}`,
+        );
+        onResourceUpdate?.('testCases', 'missing');
+      }
     }
   }
 
@@ -164,10 +255,38 @@ export async function combineReportData(
       loadedResources.push('testScenarios');
       onResourceUpdate?.('testScenarios', 'loaded');
     } else {
-      warnings.push(
-        `Missing referenced test scenarios file: ${parsedMain.testScenariosFile}`,
+      const fetchedScenariosText = await fetchTextFromPublicPaths(
+        parsedMain.testScenariosFile,
+        parsedMain.moduleFolderPath,
       );
-      onResourceUpdate?.('testScenarios', 'missing');
+
+      if (fetchedScenariosText) {
+        testScenarios = extractScenarioArray(JSON.parse(fetchedScenariosText));
+        loadedResources.push('testScenarios');
+        onResourceUpdate?.('testScenarios', 'loaded');
+      } else {
+        warnings.push(
+          `Missing referenced test scenarios file: ${parsedMain.testScenariosFile}`,
+        );
+        onResourceUpdate?.('testScenarios', 'missing');
+      }
+    }
+  }
+
+  let sqlScriptsByQueryId: Record<string, string> | null = null;
+  if (parsedMain.databaseQueries?.length) {
+    onResourceUpdate?.('sqlScripts', 'loading');
+    sqlScriptsByQueryId = await extractSqlScriptsFromFile(
+      fileMap,
+      parsedMain.moduleFolderPath,
+    );
+
+    if (sqlScriptsByQueryId) {
+      loadedResources.push('sqlScripts');
+      onResourceUpdate?.('sqlScripts', 'loaded');
+    } else {
+      warnings.push('Missing optional SQL scripts file: sql-scripts.js');
+      onResourceUpdate?.('sqlScripts', 'missing');
     }
   }
 
@@ -200,7 +319,13 @@ export async function combineReportData(
     knownIssues: parsedMain.knownIssues,
     tableOfContents: parsedMain.tableOfContents,
     testScenarios,
-    databaseQueries: parsedMain.databaseQueries,
+    databaseQueries: parsedMain.databaseQueries?.map((query) => ({
+      ...query,
+      sqlScript:
+        sqlScriptsByQueryId?.[query.queryId] ??
+        query.sqlScript ??
+        '-- SQL script not available',
+    })),
   };
 
   return { reportData, testCases, warnings, loadedResources };

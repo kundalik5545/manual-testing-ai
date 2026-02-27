@@ -135,6 +135,7 @@
       "description": "Full member number for exact match, partial for wildcard search"
     }
   ],
+  "testCases": "global-search-tl-test-cases-feb-22-2026-v1.0.json",
   "testScenariosCategory": [
     {
       "categoryId": "4.1",
@@ -196,7 +197,6 @@
   },
   "testCasesFile": "global-search-tl-test-cases-feb-22-2026-v1.0.json",
   "testScenariosFile": "global-search-tl-test-scenarios-feb-22-2026-v1.0.json",
-  "testCases": [],
   "testScenarios": [],
   "databaseQueries": [
     {

@@ -16,32 +16,34 @@ export function ContentPanel({
   return (
     <main
       id="main-content"
-      className="min-w-0 flex-1 px-3 py-4 sm:px-4 sm:py-6"
+      className="bg-muted/20 min-w-0 flex-1 overflow-y-auto px-2 py-3 sm:px-4 sm:py-5 lg:px-6"
       tabIndex={-1}
     >
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold sm:text-2xl">{title}</h1>
-        <Badge variant="info" size="md">
-          Active Section
-        </Badge>
-      </div>
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
+          <h1 className="text-lg font-semibold sm:text-2xl">{title}</h1>
+          <Badge variant="info" size="md">
+            Active Section
+          </Badge>
+        </div>
 
-      <section
-        key={sectionId}
-        className="bg-card animate-in fade-in rounded-lg border p-4 duration-200 sm:p-5"
-        aria-labelledby="section-title"
-      >
-        <h2
-          id="section-title"
-          className="text-muted-foreground mb-2 text-sm font-medium"
+        <section
+          key={sectionId}
+          className="bg-card animate-in fade-in w-full rounded-lg border p-3 shadow-xs duration-200 sm:p-5"
+          aria-labelledby="section-title"
         >
-          Section ID: {sectionId}
-        </h2>
-        {description ? (
-          <p className="text-muted-foreground mb-3 text-sm">{description}</p>
-        ) : null}
-        <SectionContent sectionId={sectionId} />
-      </section>
+          <h2
+            id="section-title"
+            className="text-muted-foreground mb-2 text-sm font-medium"
+          >
+            Section ID: {sectionId}
+          </h2>
+          {description ? (
+            <p className="text-muted-foreground mb-3 text-sm">{description}</p>
+          ) : null}
+          <SectionContent sectionId={sectionId} />
+        </section>
+      </div>
     </main>
   );
 }

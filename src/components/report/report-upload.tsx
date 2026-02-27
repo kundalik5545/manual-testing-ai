@@ -23,19 +23,17 @@ export function ReportUpload() {
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (!acceptedFiles.length) return;
-      await loadReport(acceptedFiles);
+      await loadReport([acceptedFiles[0]]);
     },
     [loadReport],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true,
+    multiple: false,
     maxSize: 50 * 1024 * 1024,
     accept: {
       'application/json': ['.json'],
-      'text/javascript': ['.js'],
-      'application/javascript': ['.js'],
     },
   });
 
@@ -69,12 +67,10 @@ export function ReportUpload() {
           className="text-muted-foreground mx-auto mb-2 size-5"
           aria-hidden="true"
         />
-        <p className="text-sm font-medium">
-          Drag and drop files here, or click to browse
-        </p>
+        <p className="text-sm font-medium">Upload main report JSON file</p>
         <p className="text-muted-foreground mt-1 text-xs">
-          Upload main report JSON and any referenced external files in one
-          action.
+          Upload one main JSON file. Linked files are auto-fetched from the same
+          folder level.
         </p>
       </div>
 

@@ -34,7 +34,7 @@ export const reportInputSchema = z.object({
       z.object({
         testCaseId: z.string(),
         testCaseName: z.string(),
-        description: z.string(),
+        description: z.string().optional(),
         category: z.string().optional(),
       }),
     )
@@ -44,7 +44,7 @@ export const reportInputSchema = z.object({
       z.object({
         queryId: z.string(),
         description: z.string(),
-        sqlScript: z.string(),
+        sqlScript: z.string().optional(),
       }),
     )
     .optional(),

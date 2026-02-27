@@ -458,6 +458,9 @@ function DatabaseQueriesSection() {
           <p className="text-muted-foreground mt-1 text-sm">
             {query.description}
           </p>
+          <pre className="bg-muted mt-3 overflow-x-auto rounded-md border p-3 text-xs whitespace-pre-wrap">
+            {query.sqlScript}
+          </pre>
         </article>
       ))}
     </div>
@@ -588,13 +591,19 @@ function SummarySection() {
         <div className="bg-card rounded-md border p-3">
           <p className="text-muted-foreground text-xs">Passed</p>
           <p className="text-sm font-medium">
-            {testCases.filter((testCase) => testCase.status === 'Passed').length}
+            {
+              testCases.filter((testCase) => testCase.status === 'Passed')
+                .length
+            }
           </p>
         </div>
         <div className="bg-card rounded-md border p-3">
           <p className="text-muted-foreground text-xs">Failed</p>
           <p className="text-sm font-medium">
-            {testCases.filter((testCase) => testCase.status === 'Failed').length}
+            {
+              testCases.filter((testCase) => testCase.status === 'Failed')
+                .length
+            }
           </p>
         </div>
       </div>
@@ -654,7 +663,9 @@ function SummarySection() {
           Last export completed: {lastExport}
         </p>
       ) : null}
-      {exportError ? <p className="text-destructive text-sm">{exportError}</p> : null}
+      {exportError ? (
+        <p className="text-destructive text-sm">{exportError}</p>
+      ) : null}
     </div>
   );
 }

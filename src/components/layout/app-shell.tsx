@@ -62,7 +62,7 @@ export function AppShell() {
 
       <AppHeader onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
-      <div className="mx-auto flex w-full max-w-400 flex-1">
+      <div className="flex min-h-0 flex-1">
         <SidebarNav
           sections={appSections}
           activeSection={activeSection}
@@ -75,11 +75,7 @@ export function AppShell() {
           }}
         />
 
-        <ContentPanel
-          title={active.label}
-          sectionId={active.id}
-          description="Section content is now routed by navigation and ready for phase-wise feature completion."
-        />
+        <ContentPanel title={active.label} sectionId={active.id} />
       </div>
     </div>
   );
