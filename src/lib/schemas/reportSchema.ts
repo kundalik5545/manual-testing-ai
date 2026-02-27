@@ -35,6 +35,13 @@ export const testScenarioInputSchema = z.object({
 
 export const reportInputSchema = z.object({
   metaData: metaDataSchema,
+  testObjective: z
+    .object({
+      mainGoal: z.string(),
+      scope: z.array(z.string()).optional(),
+      note: z.string().optional(),
+    })
+    .optional(),
   testCases: z.preprocess(
     (value) => (typeof value === 'string' ? undefined : value),
     z.array(testCaseInputSchema).optional(),
@@ -75,6 +82,31 @@ export const reportInputSchema = z.object({
   testCasesFile: z.string().optional(),
   testScenariosFile: z.string().optional(),
   moduleFolderPath: z.string().optional(),
+  testPrerequisite: z
+    .object({
+      accessRequirement: z
+        .object({
+          environmentAccess: z.string().optional(),
+          userRole: z.string().optional(),
+          vpnAccess: z.string().optional(),
+          databaseAccess: z.string().optional(),
+        })
+        .optional(),
+      businessRules: z.array(z.string()).optional(),
+      testDataRequirement: z.record(z.string()).optional(),
+      testEnvSetup: z.record(z.string()).optional(),
+    })
+    .optional(),
+  sampleTestData: z
+    .array(
+      z.object({
+        testFieldName: z.string(),
+        testValue1: z.string().optional(),
+        testValue2: z.string().optional(),
+        description: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 
 export type ReportInput = z.infer<typeof reportInputSchema>;

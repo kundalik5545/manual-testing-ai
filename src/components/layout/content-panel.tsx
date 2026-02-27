@@ -13,6 +13,8 @@ export function ContentPanel({
   sectionId,
   description,
 }: ContentPanelProps) {
+  const isPlainSection = sectionId === 'db-queries';
+
   return (
     <main
       id="main-content"
@@ -29,7 +31,11 @@ export function ContentPanel({
 
         <section
           key={sectionId}
-          className="bg-card animate-in fade-in w-full rounded-lg border p-3 shadow-xs duration-200 sm:p-5"
+          className={
+            isPlainSection
+              ? 'animate-in fade-in w-full duration-200'
+              : 'bg-card animate-in fade-in w-full rounded-lg border p-3 shadow-xs duration-200 sm:p-5'
+          }
           aria-labelledby="section-title"
         >
           <h2

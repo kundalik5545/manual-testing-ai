@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState, type ClipboardEvent } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Badge } from '@/components/ui/badge';
 import { Table, type Column } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -68,34 +70,153 @@ function OverviewSection() {
 
 function ObjectiveSection() {
   const reportData = useReportStore((state) => state.reportData);
+  const objective = reportData?.testObjective;
+
+  const scopeItems = objective?.scope?.filter(
+    (item) => typeof item === 'string' && item.trim().length > 0,
+  );
 
   return (
     <div className="space-y-2 text-sm">
-      <p>
-        This report viewer supports structured regression execution for module:{' '}
-        <span className="font-medium">{reportData?.moduleName ?? 'N/A'}</span>.
-      </p>
-      <p className="text-muted-foreground">
-        Use this workspace to manage test execution status, defects,
-        screenshots, and final sign-off with consistent report formatting.
-      </p>
+      {objective?.mainGoal ? (
+        <>
+          <p className="font-medium">{objective.mainGoal}</p>
+
+          {scopeItems?.length ? (
+            <ul className="list-disc space-y-1 pl-5">
+              {scopeItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : null}
+
+          {objective.note ? (
+            <p className="text-muted-foreground">{objective.note}</p>
+          ) : null}
+        </>
+      ) : (
+        <>
+          <p>
+            This report viewer supports structured regression execution for
+            module:{' '}
+            <span className="font-medium">
+              {reportData?.moduleName ?? 'N/A'}
+            </span>
+            .
+          </p>
+          <p className="text-muted-foreground">
+            Use this workspace to manage test execution status, defects,
+            screenshots, and final sign-off with consistent report formatting.
+          </p>
+        </>
+      )}
     </div>
   );
 }
 
 function PrerequisitesSection() {
+  const reportData = useReportStore((state) => state.reportData);
+  const prerequisites = reportData?.testPrerequisite;
+  const accessEntries = Object.entries(prerequisites?.accessRequirement ?? {})
+    .filter(([, value]) => Boolean(value && value.trim()))
+    .map(([key, value]) => ({
+      key,
+      value,
+    }));
+  const envSetupEntries = Object.entries(prerequisites?.testEnvSetup ?? {})
+    .filter(([, value]) => Boolean(value && value.trim()))
+    .map(([key, value]) => ({
+      key,
+      value,
+    }));
+  const testDataRequirementEntries = Object.entries(
+    prerequisites?.testDataRequirement ?? {},
+  )
+    .filter(([, value]) => Boolean(value && value.trim()))
+    .map(([key, value]) => ({
+      key,
+      value,
+    }));
+
+  const hasStructuredPrerequisites =
+    accessEntries.length > 0 ||
+    (prerequisites?.businessRules?.length ?? 0) > 0 ||
+    testDataRequirementEntries.length > 0 ||
+    envSetupEntries.length > 0;
+
   return (
-    <ul className="list-disc space-y-1 pl-5 text-sm">
-      <li>Upload a valid main report JSON file.</li>
-      <li>Include linked test cases/scenarios files when referenced.</li>
-      <li>Confirm target environment access before execution.</li>
-      <li>Ensure baseline test data is available for verification.</li>
-    </ul>
+    <div className="space-y-4 text-sm">
+      {hasStructuredPrerequisites ? (
+        <>
+          {accessEntries.length ? (
+            <div className="space-y-1">
+              <p className="font-medium">Access Requirement</p>
+              <ul className="list-disc space-y-1 pl-5">
+                {accessEntries.map((entry) => (
+                  <li key={entry.key}>
+                    <span className="font-medium">{entry.key}</span>:{' '}
+                    {entry.value}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {prerequisites?.businessRules?.length ? (
+            <div className="space-y-1">
+              <p className="font-medium">Business Rules</p>
+              <ul className="list-disc space-y-1 pl-5">
+                {prerequisites.businessRules.map((rule) => (
+                  <li key={rule}>{rule}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {testDataRequirementEntries.length ? (
+            <div className="space-y-1">
+              <p className="font-medium">Test Data Requirement</p>
+              <ul className="list-disc space-y-1 pl-5">
+                {testDataRequirementEntries.map((entry) => (
+                  <li key={entry.key}>
+                    <span className="font-medium">{entry.key}</span>:{' '}
+                    {entry.value}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {envSetupEntries.length ? (
+            <div className="space-y-1">
+              <p className="font-medium">Test Environment Setup</p>
+              <ul className="list-disc space-y-1 pl-5">
+                {envSetupEntries.map((entry) => (
+                  <li key={entry.key}>
+                    <span className="font-medium">{entry.key}</span>:{' '}
+                    {entry.value}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <ul className="list-disc space-y-1 pl-5">
+          <li>Upload a valid main report JSON file.</li>
+          <li>Include linked test cases/scenarios files when referenced.</li>
+          <li>Confirm target environment access before execution.</li>
+          <li>Ensure baseline test data is available for verification.</li>
+        </ul>
+      )}
+    </div>
   );
 }
 
 function TestDataSection() {
+  const reportData = useReportStore((state) => state.reportData);
   const testCases = useReportStore((state) => state.testCases);
+  const sampleTestData = reportData?.sampleTestData ?? [];
 
   return (
     <div className="space-y-3 text-sm">
@@ -103,6 +224,34 @@ function TestDataSection() {
         Loaded test cases:{' '}
         <span className="font-medium">{testCases.length}</span>
       </p>
+
+      {sampleTestData.length ? (
+        <div className="overflow-x-auto rounded-md border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-3 py-2 font-medium">Field</th>
+                <th className="px-3 py-2 font-medium">Value 1</th>
+                <th className="px-3 py-2 font-medium">Value 2</th>
+                <th className="px-3 py-2 font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sampleTestData.map((item, index) => (
+                <tr key={`${item.testFieldName}-${index}`} className="border-t">
+                  <td className="px-3 py-2 font-medium">
+                    {item.testFieldName}
+                  </td>
+                  <td className="px-3 py-2">{item.testValue1 ?? 'N/A'}</td>
+                  <td className="px-3 py-2">{item.testValue2 ?? 'N/A'}</td>
+                  <td className="px-3 py-2">{item.description ?? 'N/A'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+
       {testCases.length ? (
         <p className="text-muted-foreground">
           Test data is available through uploaded report-linked resources.
@@ -575,6 +724,19 @@ function DatabaseQueriesSection() {
   const databaseQueries = useReportStore(
     (state) => state.reportData?.databaseQueries,
   );
+  const [copiedQueryId, setCopiedQueryId] = useState<string | null>(null);
+
+  const handleCopySql = async (queryId: string, sqlScript: string) => {
+    try {
+      await navigator.clipboard.writeText(sqlScript);
+      setCopiedQueryId(queryId);
+      window.setTimeout(() => {
+        setCopiedQueryId((current) => (current === queryId ? null : current));
+      }, 1200);
+    } catch {
+      setCopiedQueryId(null);
+    }
+  };
 
   if (!databaseQueries?.length) {
     return (
@@ -586,13 +748,36 @@ function DatabaseQueriesSection() {
     <div className="space-y-3">
       {databaseQueries.map((query) => (
         <article key={query.queryId} className="rounded-md border p-3">
-          <p className="text-sm font-medium">{query.queryId}</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">{query.queryId}</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              onClick={() => void handleCopySql(query.queryId, query.sqlScript)}
+            >
+              {copiedQueryId === query.queryId ? 'Copied' : 'Copy SQL'}
+            </Button>
+          </div>
           <p className="text-muted-foreground mt-1 text-sm">
             {query.description}
           </p>
-          <pre className="bg-muted mt-3 overflow-x-auto rounded-md border p-3 text-xs whitespace-pre-wrap">
-            {query.sqlScript}
-          </pre>
+          <div className="mt-3 overflow-hidden rounded-md border">
+            <SyntaxHighlighter
+              language="sql"
+              style={oneDark}
+              customStyle={{
+                margin: 0,
+                borderRadius: 0,
+                fontSize: '0.82rem',
+                padding: '0.9rem',
+              }}
+              wrapLongLines={false}
+              showLineNumbers
+            >
+              {query.sqlScript}
+            </SyntaxHighlighter>
+          </div>
         </article>
       ))}
     </div>

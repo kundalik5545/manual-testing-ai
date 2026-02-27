@@ -34,6 +34,28 @@ export interface ReportData {
     description: string;
     sqlScript: string;
   }>;
+  testObjective?: {
+    mainGoal: string;
+    scope?: string[];
+    note?: string;
+  };
+  testPrerequisite?: {
+    accessRequirement?: {
+      environmentAccess?: string;
+      userRole?: string;
+      vpnAccess?: string;
+      databaseAccess?: string;
+    };
+    businessRules?: string[];
+    testDataRequirement?: Record<string, string>;
+    testEnvSetup?: Record<string, string>;
+  };
+  sampleTestData?: Array<{
+    testFieldName: string;
+    testValue1?: string;
+    testValue2?: string;
+    description?: string;
+  }>;
 }
 
 export type Report = ReportData;

@@ -317,6 +317,9 @@ export async function combineReportData(
     knownIssues: parsedMain.knownIssues,
     tableOfContents: parsedMain.tableOfContents,
     testScenarios,
+    testObjective: parsedMain.testObjective,
+    testPrerequisite: parsedMain.testPrerequisite,
+    sampleTestData: parsedMain.sampleTestData,
     databaseQueries: parsedMain.databaseQueries?.map((query) => ({
       ...query,
       sqlScript:
