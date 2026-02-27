@@ -1,0 +1,431 @@
+{
+  "moduleFolderPath": "global-search",
+  "metaData": {
+    "module": "Global Search",
+    "moduleName": "Global Search (Top Level)",
+    "appLevel": "TL",
+    "appLevelName": "Top Level",
+    "appLevelFullName": "Top Level (TL)",
+    "description": "Regression test cases for Global Search functionality - Top Level",
+    "testPlanId": "TP-GS-TL-2026",
+    "environment": "XPS_ADMIN_DEV",
+    "userGuideReference": "Chapter 1.9",
+    "reportDate": "February 2026",
+    "reportVersion": "1.0",
+    "createdDate": "2026-02-25",
+    "createdBy": "Kundalik Jadhav (AI)",
+    "totalTestCases": 40
+  },
+  "environmentSetup": {
+    "database": {
+      "name": "XPS_ADMIN_DEV",
+      "type": "SQL Server",
+      "version": "2022"
+    },
+    "application": {
+      "name": "PenScope",
+      "client": "XPS",
+      "module": "Global Search",
+      "appLevel": "TL",
+      "build": "XPS DEV 3.45 Build 11 Revision 1"
+    },
+    "browser": {
+      "name": "Edge",
+      "version": "Latest"
+    },
+    "testData": {
+      "scheme": "Multiple Schemes (Top Level Access)",
+      "memberIds": "To be filled during test execution"
+    },
+    "users": [
+      {
+        "role": "Main User",
+        "username": "kundalik"
+      },
+      {
+        "role": "Secondary User",
+        "username": "Om"
+      }
+    ],
+    "executionDetails": {
+      "startDate": "25 Feb 2026",
+      "endDate": "25 Feb 2026",
+      "testerName": "Kundalik"
+    }
+  },
+  "testObjective": {
+    "mainGoal": "To verify Global Search functionality across all search types and match modes at Top Level",
+    "scope": [
+      "Verify Global Search accessibility from PenScope home page",
+      "Test all search types: NI Number, Surname, First Name, Date of Birth, Postcode, Member Number",
+      "Validate Exact Match and Partial Match modes for each search type",
+      "Verify cross-scheme search functionality for Top Level users",
+      "Test search results display, sorting, and pagination",
+      "Validate security and access control for Top Level users",
+      "Test error handling and validation messages",
+      "Verify UI/UX and usability aspects of Global Search"
+    ],
+    "note": "Refer to User Guide Chapter 1.9 for detailed Global Search functionality and business rules"
+  },
+  "testPrerequisite": {
+    "accessRequirement": {
+      "environmentAccess": "Valid PenScope user credentials for XPS_ADMIN_DEV environment",
+      "userRole": "Top Level user with access to multiple schemes",
+      "vpnAccess": "VPN connection required for remote access",
+      "databaseAccess": "Read access to XPS_ADMIN_DEV database for validation queries"
+    },
+    "businessRules": [
+      "Global Search is available only to Top Level users with appropriate permissions",
+      "Exact Match mode requires complete field values for accurate results",
+      "Partial Match mode uses wildcard search for flexible matching",
+      "Cross-scheme search requires access to multiple schemes",
+      "Search results are limited to schemes accessible by the logged-in user",
+      "Maximum 1000 search results can be displayed per query"
+    ],
+    "testDataRequirement": {
+      "niNumbers": "At least 5 members with valid NI Numbers (e.g., AB123456C, CD789012E)",
+      "surnames": "Members with common surnames for partial match testing (e.g., Smith, Jones, Williams)",
+      "firstNames": "Members with common first names (e.g., John, Mary, David)",
+      "dateOfBirth": "Members with various dates of birth for exact match testing",
+      "postcodes": "Members with valid UK postcodes (e.g., SW1A 1AA, M1 1AE)",
+      "memberNumbers": "Valid member numbers from different schemes"
+    },
+    "testEnvSetup": {
+      "browser": "Edge (Latest)",
+      "database": "XPS_ADMIN_DEV (SQL Server 2022)",
+      "network": "VPN Required",
+      "testUsers": "kundalik, Om"
+    }
+  },
+  "sampleTestData": [
+    {
+      "testFieldName": "NI Number",
+      "testValue1": "AB123456C",
+      "testValue2": "AB123",
+      "description": "Full NI Number for exact match, partial for wildcard search"
+    },
+    {
+      "testFieldName": "Surname",
+      "testValue1": "Smith",
+      "testValue2": "Smi",
+      "description": "Full surname for exact match, partial for wildcard search"
+    },
+    {
+      "testFieldName": "First Name",
+      "testValue1": "John",
+      "testValue2": "Joh",
+      "description": "Full first name for exact match, partial for wildcard search"
+    },
+    {
+      "testFieldName": "Date of Birth",
+      "testValue1": "01/01/1980",
+      "testValue2": "N/A",
+      "description": "Date of birth in DD/MM/YYYY format"
+    },
+    {
+      "testFieldName": "Postcode",
+      "testValue1": "SW1A 1AA",
+      "testValue2": "SW1A",
+      "description": "Full postcode for exact match, partial for wildcard search"
+    },
+    {
+      "testFieldName": "Member Number",
+      "testValue1": "MEM001234",
+      "testValue2": "MEM001",
+      "description": "Full member number for exact match, partial for wildcard search"
+    }
+  ],
+  "testScenariosCategory": [
+    {
+      "categoryId": "4.1",
+      "categoryTitle": "Basic Search Functionality Tests",
+      "description": "Test basic search operations including access, search types, and match modes"
+    },
+    {
+      "categoryId": "4.2",
+      "categoryTitle": "Advanced Search Criteria Tests",
+      "description": "Test advanced search features including multiple criteria and filters"
+    },
+    {
+      "categoryId": "4.3",
+      "categoryTitle": "Search Results Display Tests",
+      "description": "Test search results display, sorting, and data accuracy"
+    },
+    {
+      "categoryId": "4.4",
+      "categoryTitle": "Cross-Scheme Search Tests",
+      "description": "Test cross-scheme search functionality for Top Level users"
+    },
+    {
+      "categoryId": "4.5",
+      "categoryTitle": "Performance and Pagination Tests",
+      "description": "Test search performance and pagination with large result sets"
+    },
+    {
+      "categoryId": "4.6",
+      "categoryTitle": "Security and Access Control Tests",
+      "description": "Test security restrictions and access control for different user roles"
+    },
+    {
+      "categoryId": "4.7",
+      "categoryTitle": "Error Handling and Validation Tests",
+      "description": "Test error messages and validation for invalid inputs"
+    },
+    {
+      "categoryId": "4.8",
+      "categoryTitle": "UI/UX and Usability Tests",
+      "description": "Test user interface, user experience, and usability aspects"
+    }
+  ],
+  "testScenarioPriorityWise": {
+    "high": {
+      "total": 20,
+      "testCases": []
+    },
+    "medium": {
+      "total": 13,
+      "testCases": []
+    },
+    "low": {
+      "total": 7,
+      "testCases": []
+    },
+    "highPrioritySummary": "Critical search functionality including all search types and exact/partial match modes",
+    "mediumPrioritySummary": "Advanced features including cross-scheme search and performance testing",
+    "lowPrioritySummary": "Edge cases including case sensitivity and browser compatibility"
+  },
+  "testCasesFile": "global-search-tl-test-cases-feb-22-2026-v1.0.json",
+  "testScenariosFile": "global-search-tl-test-scenarios-feb-22-2026-v1.0.json",
+  "testCases": [],
+  "testScenarios": [],
+  "sqlQueryScripts": [
+    {
+      "queryTitle": "Find Member by NI Number",
+      "description": "Query to find a member by exact NI Number",
+      "queryId": "Q1"
+    },
+    {
+      "queryTitle": "Find Members by Surname (Partial Match)",
+      "description": "Query to find members by surname with partial match using LIKE operator",
+      "queryId": "Q2"
+    },
+    {
+      "queryTitle": "Find Members by Date of Birth",
+      "description": "Query to find all members with a specific date of birth",
+      "queryId": "Q3"
+    },
+    {
+      "queryTitle": "Find Members by Postcode",
+      "description": "Query to find members by postcode with partial match",
+      "queryId": "Q4"
+    },
+    {
+      "queryTitle": "Count Members Across All Schemes",
+      "description": "Query to count total members accessible by Top Level user",
+      "queryId": "Q5"
+    }
+  ],
+  "executionChecklist": {
+    "preExecutionSteps": [
+      "Verify access to XPS_ADMIN_DEV environment",
+      "Confirm Top Level user credentials are available (kundalik, Om)",
+      "Verify test data exists in database (run validation queries)",
+      "Clear browser cache and cookies",
+      "Verify VPN connection (if required)",
+      "Review User Guide Chapter 1.9 for Global Search functionality",
+      "Ensure access to at least 3 different schemes for cross-scheme testing"
+    ],
+    "mandatoryChecks": [
+      "Take screenshots for each test case execution",
+      "Document actual results for each test case",
+      "Log any defects found during testing",
+      "Verify search results against database queries",
+      "Test both Exact Match and Partial Match modes for each search type",
+      "Verify cross-scheme search functionality",
+      "Test all 6 search types (NI Number, Surname, First Name, DOB, Postcode, Member Number)",
+      "Validate error messages for invalid inputs"
+    ],
+    "postExecutionActivities": [
+      "All 40 test cases executed",
+      "Test summary section completed with accurate metrics",
+      "All defects logged in defect tracking system",
+      "Screenshots attached to test cases",
+      "Test report exported and saved",
+      "Sign-off obtained from stakeholders",
+      "Test data cleanup (if required)",
+      "Lessons learned documented"
+    ]
+  },
+  "knownIssueNotes": {
+    "knownIssue": [
+      {
+        "issueId": "KI-001",
+        "description": "Search may timeout with large result sets (>1000 records)",
+        "workaround": "Use more specific search criteria or enable Exact Match mode",
+        "severity": "Medium",
+        "status": "Known Limitation"
+      },
+      {
+        "issueId": "KI-002",
+        "description": "Special characters in search fields may cause unexpected results",
+        "workaround": "Avoid using special characters like %, _, * in search criteria",
+        "severity": "Low",
+        "status": "Under Investigation"
+      }
+    ],
+    "knownLimitation": [
+      "Global Search is limited to Top Level users only",
+      "Maximum 1000 search results can be displayed per query",
+      "Search results are limited to schemes accessible by the logged-in user",
+      "Date of Birth search requires exact date format (DD/MM/YYYY)",
+      "Postcode search is case-insensitive but requires valid UK postcode format"
+    ]
+  },
+  "testSummary": {
+    "testExecutionMetrics": {
+      "pass": {
+        "testCount": "",
+        "percentage": ""
+      },
+      "fail": {
+        "testCount": "",
+        "percentage": ""
+      },
+      "blocked": {
+        "testCount": "",
+        "percentage": ""
+      },
+      "notExecuted": {
+        "testCount": "",
+        "percentage": ""
+      }
+    },
+    "testExecutionByPriority": {
+      "high": {
+        "total": "",
+        "executed": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "medium": {
+        "total": "",
+        "executed": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "low": {
+        "total": "",
+        "executed": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      }
+    },
+    "testExecutionByCategory": {
+      "4.1": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.2": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.3": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.4": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.5": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.6": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.7": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      },
+      "4.8": {
+        "total": "",
+        "passed": "",
+        "failed": "",
+        "blocked": "",
+        "passRate": ""
+      }
+    }
+  },
+  "defectSummary": [
+    {
+      "bugId": "",
+      "testCaseId": "",
+      "title": "",
+      "dateFound": "",
+      "severity": "",
+      "status": "",
+      "description": "",
+      "url": "",
+      "actionsTaken": ""
+    }
+  ],
+  "overallTestResult": {
+    "status": "",
+    "comment": ""
+  },
+  "signOff": {
+    "role": [],
+    "name": [],
+    "signature": [],
+    "signedDate": []
+  },
+  "signOffCriteria": {
+    "criteriaDescription": "All 40 test cases have been executed; All critical and high priority defects have been resolved or documented; Test summary section is complete with accurate metrics; All screenshots and evidence have been attached; Test report has been reviewed by QA Manager",
+    "sourceReference": "Global Search Test Plan - February 2026"
+  },
+  "accessRequirements": {
+    "environmentAccess": ["Valid PenScope user credentials for XPS_ADMIN_DEV"],
+    "userRoles": ["Top Level user with access to multiple schemes"],
+    "schemaAccess": [
+      "Access to at least 3 different schemes for cross-scheme search testing"
+    ],
+    "memberDataAccess": [
+      "Test members with various attributes (different NI Numbers, surnames, postcodes, etc.)"
+    ]
+  },
+  "environmentConfig": {
+    "browser": "Edge (latest version)",
+    "databaseName": "XPS_ADMIN_DEV",
+    "vpnRequired": "Yes (if required)"
+  }
+}
+

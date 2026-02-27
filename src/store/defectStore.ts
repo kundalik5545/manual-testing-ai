@@ -21,7 +21,8 @@ export const useDefectStore = create<DefectState>((set) => ({
 
   deleteDefect: (id) =>
     set((s) => {
-      const { [id]: _, ...rest } = s.defects;
-      return { defects: rest };
+      const nextDefects = { ...s.defects };
+      delete nextDefects[id];
+      return { defects: nextDefects };
     }),
 }));

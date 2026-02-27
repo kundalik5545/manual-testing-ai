@@ -1,0 +1,93 @@
+{
+  "test-case-file-name": "global-search-tl-test-cases-feb-22-2026-v1.0.json",
+  "testScenarios": [
+    {
+      "testCaseId": "GS01",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify Global Search can be accessed from the PenScope home page",
+      "client": ["All"],
+      "source": ["TS06-TS16"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS02",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by NI Number with Exact Match enabled",
+      "client": ["All"],
+      "source": ["TS06"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS03",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by NI Number with Exact Match disabled",
+      "client": ["All"],
+      "source": ["TS06"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS04",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by Surname with Exact Match enabled",
+      "client": ["All"],
+      "source": ["TS07"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS05",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by Surname with Exact Match disabled",
+      "client": ["All"],
+      "source": ["TS07"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS06",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by First Name with Exact Match enabled",
+      "client": ["All"],
+      "source": ["TS08"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS07",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by First Name with Exact Match disabled",
+      "client": ["All"],
+      "source": ["TS08"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS08",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by Date of Birth",
+      "client": ["All"],
+      "source": ["TS09"],
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    }
+  ]
+}

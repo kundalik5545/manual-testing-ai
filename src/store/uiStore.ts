@@ -4,7 +4,7 @@ interface UIState {
   activeSection: string;
   sidebarCollapsed: boolean;
   activeModal: string | null;
-  modalData: any;
+  modalData: unknown;
   filters: {
     priority: string[];
     status: string[];
@@ -13,7 +13,7 @@ interface UIState {
   searchQuery: string;
   setActiveSection: (section: string) => void;
   toggleSidebar: () => void;
-  openModal: (modal: string, data?: any) => void;
+  openModal: (modal: string, data?: unknown) => void;
   closeModal: () => void;
   setFilter: (type: string, values: string[]) => void;
   setSearchQuery: (query: string) => void;
@@ -29,7 +29,7 @@ export const useUIStore = create<UIState>((set) => ({
   setActiveSection: (section: string) => set({ activeSection: section }),
   toggleSidebar: () =>
     set((s: UIState) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
-  openModal: (modal: string, data?: any) =>
+  openModal: (modal: string, data?: unknown) =>
     set({ activeModal: modal, modalData: data }),
   closeModal: () => set({ activeModal: null, modalData: null }),
   setFilter: (type: string, values: string[]) =>

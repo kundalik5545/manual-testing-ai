@@ -8,5 +8,9 @@ export interface TestCase {
   priority: string[];
   source: string[];
   status: Status;
-  // additional fields such as steps, expected results, etc.
+  testSteps?: string[];
+  expectedResult?: string;
+  preconditions?: string;
+  testData?: string;
+  category?: string;
 }

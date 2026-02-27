@@ -1,0 +1,162 @@
+{
+  "test-case-file-name": "global-search-tl-test-cases-feb-22-2026-v1.0.json",
+  "testCases": [
+    {
+      "testCaseId": "GS01",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify Global Search can be accessed from the PenScope home page",
+      "client": ["All"],
+      "source": ["TS06-TS16"],
+      "testSteps": [
+        "Login to PenScope with Top Level user credentials",
+        "Navigate to PenScope home page",
+        "Verify 'Global Search' option is visible in the menu"
+      ],
+      "expectedResult": "Global Search option is accessible and visible to Top Level users",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS02",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by NI Number with Exact Match enabled",
+      "client": ["All"],
+      "source": ["TS06"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'NI Number' from search type dropdown",
+        "Enable 'Exact Match' checkbox",
+        "Enter a valid NI Number (e.g., AB123456C)",
+        "Click Search button"
+      ],
+      "expectedResult": "Only the exact member with matching NI Number is returned in search results",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS03",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by NI Number with Exact Match disabled",
+      "client": ["All"],
+      "source": ["TS06"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'NI Number' from search type dropdown",
+        "Disable 'Exact Match' checkbox",
+        "Enter partial NI Number (e.g., AB123)",
+        "Click Search button"
+      ],
+      "expectedResult": "All members with NI Numbers starting with 'AB123' are returned in search results",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS04",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by Surname with Exact Match enabled",
+      "client": ["All"],
+      "source": ["TS07"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'Surname' from search type dropdown",
+        "Enable 'Exact Match' checkbox",
+        "Enter a surname (e.g., Smith)",
+        "Click Search button"
+      ],
+      "expectedResult": "Only members with exact surname 'Smith' are returned (case-insensitive)",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS05",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by Surname with Exact Match disabled",
+      "client": ["All"],
+      "source": ["TS07"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'Surname' from search type dropdown",
+        "Disable 'Exact Match' checkbox",
+        "Enter partial surname (e.g., Smi)",
+        "Click Search button"
+      ],
+      "expectedResult": "All members with surnames starting with 'Smi' are returned (e.g., Smith, Smit, Smither)",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS06",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by First Name with Exact Match enabled",
+      "client": ["All"],
+      "source": ["TS08"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'First Name' from search type dropdown",
+        "Enable 'Exact Match' checkbox",
+        "Enter a first name (e.g., John)",
+        "Click Search button"
+      ],
+      "expectedResult": "Only members with exact first name 'John' are returned",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS07",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by First Name with Exact Match disabled",
+      "client": ["All"],
+      "source": ["TS08"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'First Name' from search type dropdown",
+        "Disable 'Exact Match' checkbox",
+        "Enter partial first name (e.g., Joh)",
+        "Click Search button"
+      ],
+      "expectedResult": "All members with first names starting with 'Joh' are returned (e.g., John, Johnny, Johnson)",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    },
+    {
+      "testCaseId": "GS08",
+      "module": "Global Search",
+      "location": "PenScope > TL",
+      "testCaseName": "Verify search by Date of Birth",
+      "client": ["All"],
+      "source": ["TS09"],
+      "testSteps": [
+        "Navigate to Global Search",
+        "Select 'Date of Birth' from search type dropdown",
+        "Enter a valid date (e.g., 01/01/1980)",
+        "Click Search button"
+      ],
+      "expectedResult": "All members with date of birth 01/01/1980 are returned",
+      "actualResult": "",
+      "priority": ["High"],
+      "testStatus": ["Select"],
+      "attachments": []
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+import { PanelLeftClose } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+export interface AppSection {
+  id: string;
+  label: string;
+}
+
+interface SidebarNavProps {
+  sections: AppSection[];
+  activeSection: string;
+  isOpen: boolean;
+  onClose: () => void;
+  onSelectSection: (sectionId: string) => void;
+}
+
+export function SidebarNav({
+  sections,
+  activeSection,
+  isOpen,
+  onClose,
+  onSelectSection,
+}: SidebarNavProps) {
+  return (
+    <>
+      {isOpen ? (
+        <button
+          type="button"
+          className="bg-foreground/30 fixed inset-0 z-30 md:hidden"
+          onClick={onClose}
+          aria-label="Close navigation menu"
+        />
+      ) : null}
+
+      <aside
+        className={cn(
+          'bg-card fixed inset-y-0 left-0 z-40 mt-14 flex w-72 flex-col border-r transition-transform sm:mt-16 md:static md:mt-0 md:translate-x-0',
+          isOpen ? 'translate-x-0' : '-translate-x-full',
+        )}
+        aria-label="Report sections"
+      >
+        <div className="flex items-center justify-between border-b px-3 py-3">
+          <p className="text-sm font-medium">Sections</p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={onClose}
+            aria-label="Close sidebar"
+          >
+            <PanelLeftClose className="size-5" aria-hidden="true" />
+          </Button>
+        </div>
+
+        <nav className="overflow-y-auto p-2" aria-label="Section navigation">
+          <ul className="space-y-1">
+            {sections.map((section) => {
+              const isActive = section.id === activeSection;
+
+              return (
+                <li key={section.id}>
+                  <button
+                    type="button"
+                    className={cn(
+                      'flex min-h-11 w-full items-center rounded-md px-3 py-2 text-left text-sm transition-colors',
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground hover:bg-accent hover:text-accent-foreground',
+                    )}
+                    onClick={() => onSelectSection(section.id)}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {section.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </aside>
+    </>
+  );
+}

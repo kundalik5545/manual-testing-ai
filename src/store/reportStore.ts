@@ -1,25 +1,127 @@
 import { create } from 'zustand';
 import { ReportData, TestCase } from '@/types';
-
-import type { StateCreator } from 'zustand';
+import { z } from 'zod';
+import {
+  combineReportData,
+  parseMainReportFile,
+} from '@/lib/services/reportDataCombiner';
+import { saveReportData } from '@/lib/db/reportStore';
+import { saveTestCaseData } from '@/lib/db/testCaseStore';
 
 interface ReportState {
   reportData: ReportData | null;
   testCases: TestCase[];
   isLoading: boolean;
-  loadReport: (file: File) => Promise<void>;
+  loadWarnings: string[];
+  loadError: string | null;
+  loadedResources: string[];
+  loadReport: (files: File[]) => Promise<void>;
   clearReport: () => void;
   updateTestCase: (id: string, data: Partial<TestCase>) => void;
+}
+
+function getFriendlyErrorMessage(error: unknown): string {
+  if (error instanceof z.ZodError) {
+    return error.issues
+      .map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
+      .join('; ');
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unable to load report due to an unknown error.';
+}
+
+async function resolveMainReportFile(files: File[]): Promise<File> {
+  const jsonFiles = files.filter((file) =>
+    file.name.toLowerCase().endsWith('.json'),
+  );
+  if (!jsonFiles.length) {
+    throw new Error('Please upload at least one JSON report file.');
+  }
+
+  for (const file of jsonFiles) {
+    try {
+      const candidate = await parseMainReportFile(file);
+      if (
+        candidate &&
+        typeof candidate === 'object' &&
+        'metaData' in candidate &&
+        candidate.metaData
+      ) {
+        return file;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  throw new Error(
+    'Could not find a valid main report JSON (missing metaData).',
+  );
 }
 
 export const useReportStore = create<ReportState>((set) => ({
   reportData: null,
   testCases: [],
   isLoading: false,
-  loadReport: async () => {
-    // TODO: implement parsing logic
+  loadWarnings: [],
+  loadError: null,
+  loadedResources: [],
+  loadReport: async (files: File[]) => {
+    set({
+      isLoading: true,
+      loadWarnings: [],
+      loadError: null,
+      loadedResources: [],
+    });
+
+    try {
+      const mainFile = await resolveMainReportFile(files);
+      const mainPayload = await parseMainReportFile(mainFile);
+      const fileMap = new Map(files.map((file) => [file.name, file]));
+
+      const combined = await combineReportData(mainPayload, fileMap);
+
+      await saveReportData(combined.reportData);
+      await saveTestCaseData({
+        id: combined.reportData.id,
+        statuses: combined.testCases.reduce<Record<string, TestCase['status']>>(
+          (acc, testCase) => {
+            acc[testCase.id] = testCase.status;
+            return acc;
+          },
+          {},
+        ),
+        screenshots: {},
+        actualResults: {},
+      });
+
+      set({
+        reportData: combined.reportData,
+        testCases: combined.testCases,
+        loadWarnings: combined.warnings,
+        loadedResources: combined.loadedResources,
+        isLoading: false,
+        loadError: null,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        loadError: getFriendlyErrorMessage(error),
+      });
+    }
   },
-  clearReport: () => set({ reportData: null, testCases: [] }),
+  clearReport: () =>
+    set({
+      reportData: null,
+      testCases: [],
+      loadWarnings: [],
+      loadError: null,
+      loadedResources: [],
+    }),
   updateTestCase: (id: string, data: Partial<TestCase>) => {
     set((state) => ({
       testCases: state.testCases.map((tc: TestCase) =>
