@@ -225,31 +225,29 @@
       "sqlScript": "-- TODO: Add SQL script for counting members across schemes"
     }
   ],
-  "executionChecklist": [
-    "Verify access to XPS_ADMIN_DEV environment",
-    "Confirm Top Level user credentials are available (kundalik, Om)",
-    "Verify test data exists in database (run validation queries)",
-    "Clear browser cache and cookies",
-    "Verify VPN connection (if required)",
-    "Review User Guide Chapter 1.9 for Global Search functionality",
-    "Ensure access to at least 3 different schemes for cross-scheme testing",
-    "Take screenshots for each test case execution",
-    "Document actual results for each test case",
-    "Log any defects found during testing",
-    "Verify search results against database queries",
-    "Test both Exact Match and Partial Match modes for each search type",
-    "Verify cross-scheme search functionality",
-    "Test all 6 search types (NI Number, Surname, First Name, DOB, Postcode, Member Number)",
-    "Validate error messages for invalid inputs",
-    "All 40 test cases executed",
-    "Test summary section completed with accurate metrics",
-    "All defects logged in defect tracking system",
-    "Screenshots attached to test cases",
-    "Test report exported and saved",
-    "Sign-off obtained from stakeholders",
-    "Test data cleanup (if required)",
-    "Lessons learned documented"
-  ],
+  "executionChecklist": {
+    "preExecutionChecks": [
+      "Verify access to XPS_ADMIN_DEV environment",
+      "Confirm Top Level user credentials are available (kundalik, Om)",
+      "Verify test data exists in database (run validation queries)",
+      "Clear browser cache and cookies",
+      "Verify VPN connection (if required)",
+      "Review User Guide Chapter 1.9 for Global Search functionality"
+    ],
+    "mandatoryChecks": [
+      "All 40 test cases have been executed",
+      "All critical and high priority defects have been resolved or documented",
+      "Test summary section is complete with accurate metrics",
+      "All screenshots and evidence have been attached",
+      "Test report has been reviewed by QA Manager"
+    ],
+    "postExecutionChecks": [
+      "Verify all test cases have been marked with final status (Pass/Fail/Blocked/Not Executed)",
+      "Ensure all defects found are logged in the defect tracking system with appropriate details",
+      "Review test execution metrics for accuracy",
+      "Prepare test summary and overall test result sections"
+    ]
+  },
   "knownIssues": [
     {
       "title": "KI-001",

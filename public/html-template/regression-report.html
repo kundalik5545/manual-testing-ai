@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression Testing Report Viewer</title>
+    <link rel="stylesheet" href="regression-report.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">📊 Regression Testing Report Viewer</h1>
+            <div class="header-actions">
+                <div class="file-selector-container">
+                    <input type="file" id="customFileInput" accept=".json" class="custom-file-input" />
+                    <label for="customFileInput" class="custom-file-label">
+                        <span class="btn-icon">📁</span>
+                        <span class="btn-text">Upload Report</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Navigation Panel -->
+        <aside class="navigation-panel" id="navigationPanel">
+            <div class="nav-header">
+                <h2>📑 Navigation</h2>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation">☰</button>
+            </div>
+            <div class="nav-content" id="navContent">
+                <div class="report-info" id="reportInfo">
+                    <p class="loading-message">Please select a JSON file to load the report</p>
+                </div>
+                <nav class="nav-menu" id="navMenu">
+                    <!-- Navigation items will be dynamically generated -->
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Right Content Panel -->
+        <main class="content-panel" id="contentPanel">
+            <div class="content-header">
+                <h2 id="contentTitle">Welcome to Regression Testing Report Viewer</h2>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search in report..." />
+                    <button id="searchClear" class="search-clear" style="display: none;">✕</button>
+                </div>
+            </div>
+            
+            <div class="content-body" id="contentBody">
+                <div class="welcome-screen">
+                    <div class="welcome-icon">📋</div>
+                    <h3>Get Started</h3>
+                    <p>Select a JSON file from the dropdown above or upload your own test data file to view the regression testing report.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✅</span>
+                            <span>Interactive navigation and content sync</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📊</span>
+                            <span>Visual test status indicators</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔍</span>
+                            <span>Search and filter functionality</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📱</span>
+                            <span>Responsive design for all devices</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Regression Testing Report Viewer | <span id="footerStatus">Ready</span></p>
+        </div>
+    </footer>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Error</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Error message will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="modalOk">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Case Details Modal -->
+    <div class="modal" id="testCaseModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="testCaseModalTitle">Test Case Details</h3>
+                <button class="modal-close" id="testCaseModalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="testCaseModalBody">
+                <!-- Test case details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="testCaseModalCancel">Cancel</button>
+                <button class="btn-primary" id="testCaseModalSave">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot Lightbox Modal -->
+    <div class="modal" id="screenshotModal">
+        <div class="modal-content modal-screenshot">
+            <div class="modal-header">
+                <h3 id="screenshotModalTitle">Screenshot Preview</h3>
+                <button class="modal-close" id="screenshotModalClose">&times;</button>
+            </div>
+            <div class="modal-body screenshot-preview-body">
+                <button class="screenshot-nav-btn screenshot-nav-prev" id="screenshotPrevBtn" title="Previous (←)">
+                    &#8249;
+                </button>
+                <img id="screenshotPreviewImage" src="" alt="Screenshot Preview">
+                <button class="screenshot-nav-btn screenshot-nav-next" id="screenshotNextBtn" title="Next (→)">
+                    &#8250;
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Defect Form Modal -->
+    <div class="modal" id="defectModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="defectModalTitle">Add New Defect</h3>
+                <button class="modal-close" onclick="closeDefectModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="defectForm" onsubmit="submitDefectForm(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="defectBugId">Bug ID <span class="required">*</span></label>
+                            <input type="text" id="defectBugId" required placeholder="e.g., BUG-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="defectTestCaseId">Test Case ID <span class="required">*</span></label>
+                            <input type="text" id="defectTestCaseId" required placeholder="e.g., TC-GS-001">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="defectTitle">Title <span class="required">*</span></label>
+                            <input type="text" id="defectTitle" required placeholder="Brief description of the defect">
+                        </div>
+                        <div class="form-group">
+                            <label for="defectSeverity">Severity <span class="required">*</span></label>
+                            <select id="defectSeverity" required>
+                                <option value="">Select Severity</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="defectStatus">Status <span class="required">*</span></label>
+                            <select id="defectStatus" required>
+                                <option value="">Select Status</option>
+                                <option value="Open">Open</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Fixed">Fixed</option>
+                                <option value="Retest">Retest</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="defectDateFound">Date Found <span class="required">*</span></label>
+                            <input type="date" id="defectDateFound" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="defectUrl">URL</label>
+                            <input type="url" id="defectUrl" placeholder="https://...">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="defectDescription">Description <span class="required">*</span></label>
+                            <textarea id="defectDescription" rows="4" required placeholder="Detailed description of the defect..."></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="defectActionsTaken">Actions Taken</label>
+                            <textarea id="defectActionsTaken" rows="3" placeholder="Steps taken to resolve or workaround..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeDefectModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">💾 Save Defect</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Defect View Modal -->
+    <div class="modal" id="defectViewModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>🐛 Defect Details</h3>
+                <button class="modal-close" onclick="closeDefectViewModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="defectViewContent">
+                    <!-- Defect details will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeDefectViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button (FAB) -->
+    <div class="fab-container">
+        <!-- Individual action buttons -->
+        <button class="fab-action-btn fab-export-html" id="exportHtmlBtn" title="Export to HTML">
+            <span class="fab-icon">💾</span>
+        </button>
+        <button class="fab-action-btn fab-export-pdf" id="exportPdfBtn" title="Export to PDF">
+            <span class="fab-icon">📄</span>
+        </button>
+        <button class="fab-action-btn fab-export-excel" id="exportExcelBtn" title="Export to Excel">
+            <span class="fab-icon">📊</span>
+        </button>
+        <button class="fab-action-btn fab-clear-data" id="fabClearDataBtn" title="Clear All Data">
+            <span class="fab-icon">🗑️</span>
+        </button>
+
+        <!-- Main FAB toggle button -->
+        <button class="fab-main-button" id="fabButton" title="Actions Menu">
+            <span class="fab-icon">⚙️</span>
+        </button>
+    </div>
+
+    <!-- SheetJS Library for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <script type="module" src="regression-report.js"></script>
+</body>
+</html>
+

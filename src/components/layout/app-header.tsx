@@ -37,45 +37,50 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   };
 
   return (
-    <header className="bg-card/95 sticky top-0 z-20 border-b backdrop-blur">
-      <div className="flex h-14 w-full items-center justify-between gap-3 px-3 sm:h-16 sm:px-4">
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={onToggleSidebar}
-            aria-label="Open navigation menu"
-          >
-            <Menu className="size-5" aria-hidden="true" />
-          </Button>
-          <div>
-            <p className="text-sm font-semibold">Regression Report Viewer</p>
-            <p className="text-muted-foreground text-xs">Next.js Migration</p>
+    <header className="sticky top-0 z-20">
+      <div className="shadow-teal-md bg-gradient-to-r from-teal-600 to-teal-700 text-white">
+        <div className="flex h-14 w-full items-center justify-between gap-3 px-3 sm:h-16 sm:px-4">
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="text-white md:hidden"
+              onClick={onToggleSidebar}
+              aria-label="Open navigation menu"
+            >
+              <Menu className="size-5" aria-hidden="true" />
+            </Button>
+            <div>
+              <p className="text-base font-semibold">
+                Regression Report Viewer
+              </p>
+              <p className="text-xs text-teal-100">Next.js Migration</p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <p className="text-muted-foreground hidden text-xs sm:block">
-            GLOBAL SEARCH
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? (
-              <Sun className="size-4" aria-hidden="true" />
-            ) : (
-              <Moon className="size-4" aria-hidden="true" />
-            )}
-            <span className="hidden sm:inline">
-              {theme === 'dark' ? 'Light' : 'Dark'}
-            </span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <p className="hidden text-xs text-teal-100 sm:block">
+              GLOBAL SEARCH
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              className="border-white/30 text-white"
+            >
+              {theme === 'dark' ? (
+                <Sun className="size-4" aria-hidden="true" />
+              ) : (
+                <Moon className="size-4" aria-hidden="true" />
+              )}
+              <span className="hidden sm:inline">
+                {theme === 'dark' ? 'Light' : 'Dark'}
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
     </header>

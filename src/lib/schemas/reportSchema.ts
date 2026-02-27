@@ -59,7 +59,18 @@ export const reportInputSchema = z.object({
       }),
     )
     .optional(),
-  executionChecklist: z.array(z.string()).optional(),
+  executionChecklist: z
+    .union([
+      z.array(z.string()),
+      z
+        .object({
+          preExecutionChecks: z.array(z.string()).optional(),
+          mandatoryChecks: z.array(z.string()).optional(),
+          postExecutionChecks: z.array(z.string()).optional(),
+        })
+        .optional(),
+    ])
+    .optional(),
   knownIssues: z
     .array(
       z.object({

@@ -31,19 +31,9 @@ export function ContentPanel({
 
         <section
           key={sectionId}
-          className={
-            isPlainSection
-              ? 'animate-in fade-in w-full duration-200'
-              : 'bg-card animate-in fade-in w-full rounded-lg border p-3 shadow-xs duration-200 sm:p-5'
-          }
-          aria-labelledby="section-title"
+          className="animate-in fade-in w-full duration-200"
+          aria-label={title}
         >
-          <h2
-            id="section-title"
-            className="text-muted-foreground mb-2 text-sm font-medium"
-          >
-            Section ID: {sectionId}
-          </h2>
           {description ? (
             <p className="text-muted-foreground mb-3 text-sm">{description}</p>
           ) : null}

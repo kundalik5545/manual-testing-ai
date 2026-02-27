@@ -50,7 +50,7 @@ export function SidebarNav({
 
       <aside
         className={cn(
-          'bg-card fixed inset-y-0 left-0 z-40 mt-14 flex w-64 flex-col border-r transition-transform sm:mt-16 md:sticky md:top-16 md:mt-0 md:h-[calc(100vh-4rem)] md:shrink-0 md:translate-x-0',
+          'bg-card fixed inset-y-0 left-0 z-40 mt-14 flex w-80 flex-col border-r transition-transform sm:mt-16 md:sticky md:top-16 md:mt-0 md:h-[calc(100vh-4rem)] md:shrink-0 md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
         aria-label="Report sections"
@@ -80,16 +80,19 @@ export function SidebarNav({
                   <button
                     type="button"
                     className={cn(
-                      'flex min-h-11 w-full items-center rounded-md px-3 py-2 text-left text-sm transition-colors',
+                      'flex min-h-11 w-full items-center rounded-md px-4 py-3 text-left text-sm transition-all duration-200',
                       isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground hover:bg-accent hover:text-accent-foreground',
+                        ? 'shadow-teal-sm bg-gradient-to-r from-teal-500 to-teal-600 font-semibold text-white'
+                        : 'text-foreground hover:translate-x-1 hover:bg-teal-50',
                     )}
                     onClick={() => onSelectSection(section.id)}
                     onKeyDown={(event) => handleArrowNavigation(event, index)}
                     aria-current={isActive ? 'page' : undefined}
                   >
-                    {section.label}
+                    <span className="flex-1">{section.label}</span>
+                    {isActive ? (
+                      <span className="ml-2 inline-block h-3 w-3 rounded-full bg-white/80" />
+                    ) : null}
                   </button>
                 </li>
               );

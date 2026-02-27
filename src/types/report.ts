@@ -11,7 +11,13 @@ export interface ReportData {
   testCasesFile?: string;
   testScenariosFile?: string;
   moduleFolderPath?: string;
-  executionChecklist?: string[];
+  executionChecklist?:
+    | string[]
+    | {
+        preExecutionChecks?: string[];
+        mandatoryChecks?: string[];
+        postExecutionChecks?: string[];
+      };
   knownIssues?: Array<{
     title: string;
     description: string;

@@ -82,6 +82,29 @@
   --sidebar-ring: oklch(0.709 0.01 56.259);
 }
 
+/* Additional theme tokens from html-template (teal/orange) */
+:root {
+  --teal-50: #e6f4f9;
+  --teal-100: #b3dce9;
+  --teal-500: #2596be;
+  --teal-600: #1a7a9e;
+  --teal-700: #15607a;
+
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+
+  /* Map primary to teal so shadcn classes using --primary match the template */
+  --primary: var(--teal-500);
+  --primary-foreground: #ffffff;
+  --card: #ffffff;
+  --card-foreground: var(--text-foreground, #111827);
+  --note-bg: #fffbeb;
+  --note-border: #fbbf24;
+  --note-text: #92400e;
+}
+
 .dark {
   --background: oklch(0.147 0.004 49.25);
   --foreground: oklch(0.985 0.001 106.423);
