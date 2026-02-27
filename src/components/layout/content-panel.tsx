@@ -19,7 +19,7 @@ export function ContentPanel({
       className="bg-muted/20 min-w-0 flex-1 overflow-y-auto px-2 py-3 sm:px-4 sm:py-5 lg:px-6"
       tabIndex={-1}
     >
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-360">
         <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
           <h1 className="text-lg font-semibold sm:text-2xl">{title}</h1>
           <Badge variant="info" size="md">

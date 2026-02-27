@@ -125,6 +125,10 @@ function TestCasesSection() {
   const [selectedTestCaseId, setSelectedTestCaseId] = useState<string | null>(
     null,
   );
+  const [previewState, setPreviewState] = useState<{
+    testCaseId: string;
+    screenshotIndex: number;
+  } | null>(null);
   const [actualResultDraft, setActualResultDraft] = useState('');
   const [screenshotError, setScreenshotError] = useState<string | null>(null);
 
@@ -142,6 +146,53 @@ function TestCasesSection() {
     setSelectedTestCaseId(null);
     setActualResultDraft('');
     setScreenshotError(null);
+  };
+
+  const handleOpenScreenshotPreview = (
+    testCaseId: string,
+    screenshotIndex: number,
+  ) => {
+    setPreviewState({ testCaseId, screenshotIndex });
+  };
+
+  const handleCloseScreenshotPreview = () => {
+    setPreviewState(null);
+  };
+
+  const handleDeleteScreenshot = async (
+    testCaseId: string,
+    screenshotIndex: number,
+  ) => {
+    await deleteScreenshot(testCaseId, screenshotIndex);
+    setPreviewState((current) =>
+      current?.testCaseId === testCaseId ? null : current,
+    );
+  };
+
+  const currentPreviewScreenshots = previewState
+    ? (screenshotsByTestCase[previewState.testCaseId] ?? [])
+    : [];
+
+  const currentPreviewImage = previewState
+    ? (currentPreviewScreenshots[previewState.screenshotIndex] ?? null)
+    : null;
+
+  const handleNextPreviewScreenshot = () => {
+    setPreviewState((current) => {
+      if (!current) {
+        return null;
+      }
+
+      const screenshots = screenshotsByTestCase[current.testCaseId] ?? [];
+      if (!screenshots.length) {
+        return null;
+      }
+
+      return {
+        testCaseId: current.testCaseId,
+        screenshotIndex: (current.screenshotIndex + 1) % screenshots.length,
+      };
+    });
   };
 
   const handlePasteFromClipboard = async (testCaseId: string) => {
@@ -294,11 +345,52 @@ function TestCasesSection() {
     {
       key: 'screenshots',
       header: 'Screenshots',
-      render: (_, row) => (
-        <Badge size="sm" variant="info">
-          {(screenshotsByTestCase[row.id] ?? []).length}
-        </Badge>
-      ),
+      render: (_, row) => {
+        const screenshots = screenshotsByTestCase[row.id] ?? [];
+
+        if (!screenshots.length) {
+          return (
+            <span className="text-muted-foreground text-xs">No Preview</span>
+          );
+        }
+
+        return (
+          <div className="flex items-center gap-1.5">
+            {screenshots.slice(0, 2).map((image, index) => (
+              <div
+                key={`${row.id}-shot-${index}`}
+                className="group relative h-11 w-14 shrink-0"
+              >
+                <button
+                  type="button"
+                  className="h-full w-full overflow-hidden rounded-md border"
+                  onClick={() => handleOpenScreenshotPreview(row.id, index)}
+                  aria-label={`Preview screenshot ${index + 1} for ${row.id}`}
+                >
+                  <img
+                    src={image}
+                    alt={`Screenshot ${index + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+                <button
+                  type="button"
+                  className="bg-destructive text-primary-foreground absolute -top-1 -right-1 hidden size-5 items-center justify-center rounded-full text-xs group-hover:flex"
+                  onClick={() => void handleDeleteScreenshot(row.id, index)}
+                  aria-label={`Delete screenshot ${index + 1} for ${row.id}`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {screenshots.length > 2 ? (
+              <Badge size="sm" variant="neutral">
+                +{screenshots.length - 2}
+              </Badge>
+            ) : null}
+          </div>
+        );
+      },
     },
   ];
 
@@ -432,6 +524,46 @@ function TestCasesSection() {
                 <EmptyState text="No screenshots captured for this test case yet." />
               )}
             </div>
+          </div>
+        ) : null}
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(currentPreviewImage)}
+        onClose={handleCloseScreenshotPreview}
+        title="Screenshot Preview"
+        size="xl"
+        footer={
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleCloseScreenshotPreview}
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleNextPreviewScreenshot}
+              disabled={currentPreviewScreenshots.length < 2}
+            >
+              Next Screenshot
+            </Button>
+          </div>
+        }
+      >
+        {currentPreviewImage ? (
+          <div className="space-y-3">
+            <img
+              src={currentPreviewImage}
+              alt="Selected screenshot preview"
+              className="max-h-[65vh] w-full rounded-md border object-contain"
+            />
+            <p className="text-muted-foreground text-xs">
+              Screenshot {((previewState?.screenshotIndex ?? 0) + 1).toString()}{' '}
+              of {currentPreviewScreenshots.length.toString()}
+            </p>
           </div>
         ) : null}
       </Modal>

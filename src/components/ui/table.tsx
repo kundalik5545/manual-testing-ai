@@ -76,7 +76,7 @@ export function Table<T extends object>({
 
   return (
     <div className="overflow-x-auto rounded-lg border">
-      <table className="min-w-full border-separate border-spacing-0 text-sm">
+      <table className="min-w-full border-separate border-spacing-0 text-[15px]">
         <thead className="bg-muted sticky top-0 z-10">
           <tr>
             {columns.map((column) => {

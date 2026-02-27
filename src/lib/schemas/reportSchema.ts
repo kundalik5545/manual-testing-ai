@@ -26,19 +26,23 @@ export const testCaseInputSchema = z.object({
   category: z.string().optional(),
 });
 
+export const testScenarioInputSchema = z.object({
+  testCaseId: z.string(),
+  testCaseName: z.string(),
+  description: z.string().optional(),
+  category: z.string().optional(),
+});
+
 export const reportInputSchema = z.object({
   metaData: metaDataSchema,
-  testCases: z.array(testCaseInputSchema).optional(),
-  testScenarios: z
-    .array(
-      z.object({
-        testCaseId: z.string(),
-        testCaseName: z.string(),
-        description: z.string().optional(),
-        category: z.string().optional(),
-      }),
-    )
-    .optional(),
+  testCases: z.preprocess(
+    (value) => (typeof value === 'string' ? undefined : value),
+    z.array(testCaseInputSchema).optional(),
+  ),
+  testScenarios: z.preprocess(
+    (value) => (typeof value === 'string' ? undefined : value),
+    z.array(testScenarioInputSchema).optional(),
+  ),
   databaseQueries: z
     .array(
       z.object({

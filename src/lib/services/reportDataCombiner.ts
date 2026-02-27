@@ -2,6 +2,7 @@ import type { ReportData, TestCase } from '@/types';
 import {
   reportInputSchema,
   testCaseInputSchema,
+  testScenarioInputSchema,
   type ReportInput,
   type TestCaseInput,
 } from '@/lib/schemas/reportSchema';
@@ -80,10 +81,7 @@ function buildPublicCandidatePaths(
   const normalized = targetName.split(/[\\/]/).pop() ?? targetName;
   const moduleFolder = moduleFolderPath?.replace(/^\/+|\/+$/g, '');
 
-  const candidates = [
-    `/html-reports/${normalized}`,
-    `/${normalized}`,
-  ];
+  const candidates = [`/html-reports/${normalized}`, `/${normalized}`];
 
   if (moduleFolder) {
     candidates.unshift(`/${moduleFolder}/${normalized}`);
@@ -135,7 +133,7 @@ function extractTestCaseArray(value: unknown): TestCaseInput[] {
 
 function extractScenarioArray(value: unknown): ReportInput['testScenarios'] {
   if (Array.isArray(value)) {
-    return reportInputSchema.shape.testScenarios.unwrap().parse(value);
+    return value.map((entry) => testScenarioInputSchema.parse(entry));
   }
 
   if (
@@ -143,9 +141,9 @@ function extractScenarioArray(value: unknown): ReportInput['testScenarios'] {
     typeof value === 'object' &&
     Array.isArray((value as { testScenarios?: unknown[] }).testScenarios)
   ) {
-    return reportInputSchema.shape.testScenarios
-      .unwrap()
-      .parse((value as { testScenarios: unknown[] }).testScenarios);
+    return (value as { testScenarios: unknown[] }).testScenarios.map((entry) =>
+      testScenarioInputSchema.parse(entry),
+    );
   }
 
   throw new Error(
