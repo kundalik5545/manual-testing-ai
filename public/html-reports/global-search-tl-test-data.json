@@ -8,12 +8,12 @@
     "appLevelFullName": "Top Level (TL)",
     "description": "Regression test cases for Global Search functionality - Top Level",
     "testPlanId": "TP-GS-TL-2026",
-    "environment": "XPS_ADMIN_DEV",
+    "testEnvironment": "XPS_ADMIN_DEV",
     "userGuideReference": "Chapter 1.9",
-    "reportDate": "February 2026",
-    "reportVersion": "1.0",
+    "lastUpdated": "February 2026",
+    "version": "1.0",
     "createdDate": "2026-02-25",
-    "createdBy": "Kundalik Jadhav (AI)",
+    "preparedBy": "Kundalik Jadhav (AI)",
     "totalTestCases": 40
   },
   "environmentSetup": {
@@ -198,89 +198,77 @@
   "testScenariosFile": "global-search-tl-test-scenarios-feb-22-2026-v1.0.json",
   "testCases": [],
   "testScenarios": [],
-  "sqlQueryScripts": [
+  "databaseQueries": [
     {
-      "queryTitle": "Find Member by NI Number",
+      "queryId": "Q1",
       "description": "Query to find a member by exact NI Number",
-      "queryId": "Q1"
+      "sqlScript": "-- TODO: Add SQL script for finding member by exact NI Number"
     },
     {
-      "queryTitle": "Find Members by Surname (Partial Match)",
+      "queryId": "Q2",
       "description": "Query to find members by surname with partial match using LIKE operator",
-      "queryId": "Q2"
+      "sqlScript": "-- TODO: Add SQL script for partial surname member search"
     },
     {
-      "queryTitle": "Find Members by Date of Birth",
+      "queryId": "Q3",
       "description": "Query to find all members with a specific date of birth",
-      "queryId": "Q3"
+      "sqlScript": "-- TODO: Add SQL script for date of birth member search"
     },
     {
-      "queryTitle": "Find Members by Postcode",
+      "queryId": "Q4",
       "description": "Query to find members by postcode with partial match",
-      "queryId": "Q4"
+      "sqlScript": "-- TODO: Add SQL script for postcode member search"
     },
     {
-      "queryTitle": "Count Members Across All Schemes",
+      "queryId": "Q5",
       "description": "Query to count total members accessible by Top Level user",
-      "queryId": "Q5"
+      "sqlScript": "-- TODO: Add SQL script for counting members across schemes"
     }
   ],
-  "executionChecklist": {
-    "preExecutionSteps": [
-      "Verify access to XPS_ADMIN_DEV environment",
-      "Confirm Top Level user credentials are available (kundalik, Om)",
-      "Verify test data exists in database (run validation queries)",
-      "Clear browser cache and cookies",
-      "Verify VPN connection (if required)",
-      "Review User Guide Chapter 1.9 for Global Search functionality",
-      "Ensure access to at least 3 different schemes for cross-scheme testing"
-    ],
-    "mandatoryChecks": [
-      "Take screenshots for each test case execution",
-      "Document actual results for each test case",
-      "Log any defects found during testing",
-      "Verify search results against database queries",
-      "Test both Exact Match and Partial Match modes for each search type",
-      "Verify cross-scheme search functionality",
-      "Test all 6 search types (NI Number, Surname, First Name, DOB, Postcode, Member Number)",
-      "Validate error messages for invalid inputs"
-    ],
-    "postExecutionActivities": [
-      "All 40 test cases executed",
-      "Test summary section completed with accurate metrics",
-      "All defects logged in defect tracking system",
-      "Screenshots attached to test cases",
-      "Test report exported and saved",
-      "Sign-off obtained from stakeholders",
-      "Test data cleanup (if required)",
-      "Lessons learned documented"
-    ]
-  },
-  "knownIssueNotes": {
-    "knownIssue": [
-      {
-        "issueId": "KI-001",
-        "description": "Search may timeout with large result sets (>1000 records)",
-        "workaround": "Use more specific search criteria or enable Exact Match mode",
-        "severity": "Medium",
-        "status": "Known Limitation"
-      },
-      {
-        "issueId": "KI-002",
-        "description": "Special characters in search fields may cause unexpected results",
-        "workaround": "Avoid using special characters like %, _, * in search criteria",
-        "severity": "Low",
-        "status": "Under Investigation"
-      }
-    ],
-    "knownLimitation": [
-      "Global Search is limited to Top Level users only",
-      "Maximum 1000 search results can be displayed per query",
-      "Search results are limited to schemes accessible by the logged-in user",
-      "Date of Birth search requires exact date format (DD/MM/YYYY)",
-      "Postcode search is case-insensitive but requires valid UK postcode format"
-    ]
-  },
+  "executionChecklist": [
+    "Verify access to XPS_ADMIN_DEV environment",
+    "Confirm Top Level user credentials are available (kundalik, Om)",
+    "Verify test data exists in database (run validation queries)",
+    "Clear browser cache and cookies",
+    "Verify VPN connection (if required)",
+    "Review User Guide Chapter 1.9 for Global Search functionality",
+    "Ensure access to at least 3 different schemes for cross-scheme testing",
+    "Take screenshots for each test case execution",
+    "Document actual results for each test case",
+    "Log any defects found during testing",
+    "Verify search results against database queries",
+    "Test both Exact Match and Partial Match modes for each search type",
+    "Verify cross-scheme search functionality",
+    "Test all 6 search types (NI Number, Surname, First Name, DOB, Postcode, Member Number)",
+    "Validate error messages for invalid inputs",
+    "All 40 test cases executed",
+    "Test summary section completed with accurate metrics",
+    "All defects logged in defect tracking system",
+    "Screenshots attached to test cases",
+    "Test report exported and saved",
+    "Sign-off obtained from stakeholders",
+    "Test data cleanup (if required)",
+    "Lessons learned documented"
+  ],
+  "knownIssues": [
+    {
+      "title": "KI-001",
+      "description": "Search may timeout with large result sets (>1000 records)",
+      "workaround": "Use more specific search criteria or enable Exact Match mode"
+    },
+    {
+      "title": "KI-002",
+      "description": "Special characters in search fields may cause unexpected results",
+      "workaround": "Avoid using special characters like %, _, * in search criteria"
+    }
+  ],
+  "knownLimitations": [
+    "Global Search is limited to Top Level users only",
+    "Maximum 1000 search results can be displayed per query",
+    "Search results are limited to schemes accessible by the logged-in user",
+    "Date of Birth search requires exact date format (DD/MM/YYYY)",
+    "Postcode search is case-insensitive but requires valid UK postcode format"
+  ],
   "testSummary": {
     "testExecutionMetrics": {
       "pass": {
@@ -428,4 +416,3 @@
     "vpnRequired": "Yes (if required)"
   }
 }
-

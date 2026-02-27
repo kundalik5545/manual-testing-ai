@@ -1,4 +1,5 @@
 import { PanelLeftClose } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +9,7 @@ export interface AppSection {
 }
 
 interface SidebarNavProps {
-  sections: AppSection[];
+  sections: readonly AppSection[];
   activeSection: string;
   isOpen: boolean;
   onClose: () => void;
@@ -22,6 +23,20 @@ export function SidebarNav({
   onClose,
   onSelectSection,
 }: SidebarNavProps) {
+  const handleArrowNavigation = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+      return;
+    }
+
+    event.preventDefault();
+    const direction = event.key === 'ArrowDown' ? 1 : -1;
+    const nextIndex = (index + direction + sections.length) % sections.length;
+    onSelectSection(sections[nextIndex].id);
+  };
+
   return (
     <>
       {isOpen ? (
@@ -56,7 +71,7 @@ export function SidebarNav({
 
         <nav className="overflow-y-auto p-2" aria-label="Section navigation">
           <ul className="space-y-1">
-            {sections.map((section) => {
+            {sections.map((section, index) => {
               const isActive = section.id === activeSection;
 
               return (
@@ -70,6 +85,7 @@ export function SidebarNav({
                         : 'text-foreground hover:bg-accent hover:text-accent-foreground',
                     )}
                     onClick={() => onSelectSection(section.id)}
+                    onKeyDown={(event) => handleArrowNavigation(event, index)}
                     aria-current={isActive ? 'page' : undefined}
                   >
                     {section.label}

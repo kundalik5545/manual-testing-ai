@@ -1,36 +1,53 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { AppHeader } from '@/components/layout/app-header';
-import { SidebarNav, type AppSection } from '@/components/layout/sidebar-nav';
-import { ContentPanel } from '@/components/layout/content-panel';
+import { useEffect, useMemo, useState } from 'react';
+import { AppHeader } from './app-header';
+import { SidebarNav } from './sidebar-nav';
+import { ContentPanel } from './content-panel';
+import {
+  appSections,
+  type SectionId,
+} from '@/components/layout/section-config';
 
-const sections: AppSection[] = [
-  { id: 'overview', label: 'Test Report Overview' },
-  { id: 'objective', label: 'Test Objective' },
-  { id: 'prerequisites', label: 'Test Prerequisites' },
-  { id: 'test-data', label: 'Test Data' },
-  { id: 'test-cases', label: 'Regression Test Cases' },
-  { id: 'db-queries', label: 'Database Queries' },
-  { id: 'checklist', label: 'Test Execution Checklist' },
-  { id: 'known-issues', label: 'Known Issues & Notes' },
-  { id: 'summary', label: 'Test Summary Template' },
-  { id: 'defect-log', label: 'Defect Log' },
-  { id: 'sign-off', label: 'Sign-Off' },
-];
+const defaultSection = appSections[0];
+
+function isValidSectionId(value: string): value is SectionId {
+  return appSections.some((section) => section.id === value);
+}
 
 export function AppShell() {
-  const [activeSection, setActiveSection] = useState<string>(sections[0].id);
+  const [activeSection, setActiveSection] = useState<SectionId>(
+    defaultSection.id,
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const active = useMemo(
     () =>
-      sections.find((section) => section.id === activeSection) ?? sections[0],
+      appSections.find((section) => section.id === activeSection) ??
+      defaultSection,
     [activeSection],
   );
 
-  const handleSelectSection = (sectionId: string) => {
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && isValidSectionId(hash)) {
+      setActiveSection(hash);
+    }
+
+    const handleHashChange = () => {
+      const next = window.location.hash.replace('#', '');
+      if (next && isValidSectionId(next)) {
+        setActiveSection(next);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleSelectSection = (sectionId: SectionId) => {
     setActiveSection(sectionId);
+    window.location.hash = sectionId;
     setSidebarOpen(false);
   };
 
@@ -45,19 +62,23 @@ export function AppShell() {
 
       <AppHeader onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
-      <div className="mx-auto flex w-full max-w-[1600px] flex-1">
+      <div className="mx-auto flex w-full max-w-400 flex-1">
         <SidebarNav
-          sections={sections}
+          sections={appSections}
           activeSection={activeSection}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
-          onSelectSection={handleSelectSection}
+          onSelectSection={(sectionId) => {
+            if (isValidSectionId(sectionId)) {
+              handleSelectSection(sectionId);
+            }
+          }}
         />
 
         <ContentPanel
           title={active.label}
           sectionId={active.id}
-          description="Phase 3 upload pipeline is active in overview; remaining sections are ready for implementation."
+          description="Section content is now routed by navigation and ready for phase-wise feature completion."
         />
       </div>
     </div>

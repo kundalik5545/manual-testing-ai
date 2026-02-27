@@ -1,9 +1,10 @@
 import { Badge } from '@/components/ui/badge';
-import { ReportUpload } from '@/components/report/report-upload';
+import { SectionContent } from '@/components/report/section-content';
+import type { SectionId } from '@/components/layout/section-config';
 
 interface ContentPanelProps {
   title: string;
-  sectionId: string;
+  sectionId: SectionId;
   description?: string;
 }
 
@@ -18,8 +19,6 @@ export function ContentPanel({
       className="min-w-0 flex-1 px-3 py-4 sm:px-4 sm:py-6"
       tabIndex={-1}
     >
-      {sectionId === 'overview' ? <ReportUpload /> : null}
-
       <div className="mb-4 flex items-center justify-between gap-2">
         <h1 className="text-xl font-semibold sm:text-2xl">{title}</h1>
         <Badge variant="info" size="md">
@@ -28,7 +27,8 @@ export function ContentPanel({
       </div>
 
       <section
-        className="bg-card rounded-lg border p-4 sm:p-5"
+        key={sectionId}
+        className="bg-card animate-in fade-in rounded-lg border p-4 duration-200 sm:p-5"
         aria-labelledby="section-title"
       >
         <h2
@@ -37,10 +37,10 @@ export function ContentPanel({
         >
           Section ID: {sectionId}
         </h2>
-        <p className="text-muted-foreground text-sm">
-          {description ??
-            'Section content will be implemented in the next phases.'}
-        </p>
+        {description ? (
+          <p className="text-muted-foreground mb-3 text-sm">{description}</p>
+        ) : null}
+        <SectionContent sectionId={sectionId} />
       </section>
     </main>
   );

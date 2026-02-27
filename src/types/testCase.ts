@@ -10,6 +10,7 @@ export interface TestCase {
   status: Status;
   testSteps?: string[];
   expectedResult?: string;
+  actualResult?: string;
   preconditions?: string;
   testData?: string;
   category?: string;

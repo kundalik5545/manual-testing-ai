@@ -6,18 +6,24 @@ import {
   parseMainReportFile,
 } from '@/lib/services/reportDataCombiner';
 import { saveReportData } from '@/lib/db/reportStore';
-import { saveTestCaseData } from '@/lib/db/testCaseStore';
+import { loadTestCaseData, saveTestCaseData } from '@/lib/db/testCaseStore';
 
 interface ReportState {
   reportData: ReportData | null;
   testCases: TestCase[];
+  screenshotsByTestCase: Record<string, string[]>;
   isLoading: boolean;
   loadWarnings: string[];
   loadError: string | null;
   loadedResources: string[];
   loadReport: (files: File[]) => Promise<void>;
   clearReport: () => void;
-  updateTestCase: (id: string, data: Partial<TestCase>) => void;
+  updateTestCase: (id: string, data: Partial<TestCase>) => Promise<void>;
+  addScreenshot: (testCaseId: string, imageDataUrl: string) => Promise<void>;
+  deleteScreenshot: (
+    testCaseId: string,
+    screenshotIndex: number,
+  ) => Promise<void>;
 }
 
 function getFriendlyErrorMessage(error: unknown): string {
@@ -63,9 +69,10 @@ async function resolveMainReportFile(files: File[]): Promise<File> {
   );
 }
 
-export const useReportStore = create<ReportState>((set) => ({
+export const useReportStore = create<ReportState>((set, get) => ({
   reportData: null,
   testCases: [],
+  screenshotsByTestCase: {},
   isLoading: false,
   loadWarnings: [],
   loadError: null,
@@ -84,24 +91,38 @@ export const useReportStore = create<ReportState>((set) => ({
       const fileMap = new Map(files.map((file) => [file.name, file]));
 
       const combined = await combineReportData(mainPayload, fileMap);
+      const persistedExecution = await loadTestCaseData(combined.reportData.id);
+
+      const hydratedTestCases = combined.testCases.map((testCase) => ({
+        ...testCase,
+        status: persistedExecution?.statuses[testCase.id] ?? testCase.status,
+        actualResult: persistedExecution?.actualResults[testCase.id] ?? '',
+      }));
 
       await saveReportData(combined.reportData);
       await saveTestCaseData({
         id: combined.reportData.id,
-        statuses: combined.testCases.reduce<Record<string, TestCase['status']>>(
+        statuses: hydratedTestCases.reduce<Record<string, TestCase['status']>>(
           (acc, testCase) => {
             acc[testCase.id] = testCase.status;
             return acc;
           },
           {},
         ),
-        screenshots: {},
-        actualResults: {},
+        screenshots: persistedExecution?.screenshots ?? {},
+        actualResults: hydratedTestCases.reduce<Record<string, string>>(
+          (acc, testCase) => {
+            acc[testCase.id] = testCase.actualResult ?? '';
+            return acc;
+          },
+          {},
+        ),
       });
 
       set({
         reportData: combined.reportData,
-        testCases: combined.testCases,
+        testCases: hydratedTestCases,
+        screenshotsByTestCase: persistedExecution?.screenshots ?? {},
         loadWarnings: combined.warnings,
         loadedResources: combined.loadedResources,
         isLoading: false,
@@ -118,15 +139,109 @@ export const useReportStore = create<ReportState>((set) => ({
     set({
       reportData: null,
       testCases: [],
+      screenshotsByTestCase: {},
       loadWarnings: [],
       loadError: null,
       loadedResources: [],
     }),
-  updateTestCase: (id: string, data: Partial<TestCase>) => {
+  updateTestCase: async (id: string, data: Partial<TestCase>) => {
     set((state) => ({
       testCases: state.testCases.map((tc: TestCase) =>
         tc.id === id ? { ...tc, ...data } : tc,
       ),
     }));
+
+    const { reportData, testCases, screenshotsByTestCase } = get();
+    if (!reportData) {
+      return;
+    }
+
+    await saveTestCaseData({
+      id: reportData.id,
+      statuses: testCases.reduce<Record<string, TestCase['status']>>(
+        (acc, testCase) => {
+          acc[testCase.id] = testCase.status;
+          return acc;
+        },
+        {},
+      ),
+      screenshots: screenshotsByTestCase,
+      actualResults: testCases.reduce<Record<string, string>>(
+        (acc, testCase) => {
+          acc[testCase.id] = testCase.actualResult ?? '';
+          return acc;
+        },
+        {},
+      ),
+    });
+  },
+  addScreenshot: async (testCaseId: string, imageDataUrl: string) => {
+    set((state) => ({
+      screenshotsByTestCase: {
+        ...state.screenshotsByTestCase,
+        [testCaseId]: [
+          ...(state.screenshotsByTestCase[testCaseId] ?? []),
+          imageDataUrl,
+        ],
+      },
+    }));
+
+    const { reportData, testCases, screenshotsByTestCase } = get();
+    if (!reportData) {
+      return;
+    }
+
+    await saveTestCaseData({
+      id: reportData.id,
+      statuses: testCases.reduce<Record<string, TestCase['status']>>(
+        (acc, testCase) => {
+          acc[testCase.id] = testCase.status;
+          return acc;
+        },
+        {},
+      ),
+      screenshots: screenshotsByTestCase,
+      actualResults: testCases.reduce<Record<string, string>>(
+        (acc, testCase) => {
+          acc[testCase.id] = testCase.actualResult ?? '';
+          return acc;
+        },
+        {},
+      ),
+    });
+  },
+  deleteScreenshot: async (testCaseId: string, screenshotIndex: number) => {
+    set((state) => ({
+      screenshotsByTestCase: {
+        ...state.screenshotsByTestCase,
+        [testCaseId]: (state.screenshotsByTestCase[testCaseId] ?? []).filter(
+          (_image, index) => index !== screenshotIndex,
+        ),
+      },
+    }));
+
+    const { reportData, testCases, screenshotsByTestCase } = get();
+    if (!reportData) {
+      return;
+    }
+
+    await saveTestCaseData({
+      id: reportData.id,
+      statuses: testCases.reduce<Record<string, TestCase['status']>>(
+        (acc, testCase) => {
+          acc[testCase.id] = testCase.status;
+          return acc;
+        },
+        {},
+      ),
+      screenshots: screenshotsByTestCase,
+      actualResults: testCases.reduce<Record<string, string>>(
+        (acc, testCase) => {
+          acc[testCase.id] = testCase.actualResult ?? '';
+          return acc;
+        },
+        {},
+      ),
+    });
   },
 }));

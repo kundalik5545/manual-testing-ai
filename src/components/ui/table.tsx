@@ -4,10 +4,10 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface Column<T> {
-  key: keyof T;
+  key: keyof T | string;
   header: string;
   sortable?: boolean;
-  render?: (value: T[keyof T], row: T) => ReactNode;
+  render?: (value: unknown, row: T) => ReactNode;
   width?: string;
 }
 
@@ -19,11 +19,11 @@ interface TableProps<T> {
 }
 
 type SortState<T> = {
-  key: keyof T;
+  key: keyof T | string;
   direction: 'asc' | 'desc';
 } | null;
 
-export function Table<T extends Record<string, unknown>>({
+export function Table<T extends object>({
   columns,
   data,
   sortable = true,
@@ -34,9 +34,17 @@ export function Table<T extends Record<string, unknown>>({
   const sortedRows = useMemo(() => {
     if (!sort) return data;
 
+    const getSortableValue = (row: T, key: keyof T | string): unknown => {
+      if (typeof key === 'string' && !(key in row)) {
+        return undefined;
+      }
+
+      return row[key as keyof T];
+    };
+
     return [...data].sort((a, b) => {
-      const left = a[sort.key];
-      const right = b[sort.key];
+      const left = getSortableValue(a, sort.key);
+      const right = getSortableValue(b, sort.key);
 
       if (left === right) return 0;
       if (left == null) return 1;
@@ -115,7 +123,11 @@ export function Table<T extends Record<string, unknown>>({
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((column) => {
-                const cellValue = row[column.key];
+                const hasKey =
+                  typeof column.key === 'string' && column.key in row;
+                const cellValue = hasKey
+                  ? row[column.key as keyof T]
+                  : undefined;
 
                 return (
                   <td

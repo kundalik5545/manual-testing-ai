@@ -8,7 +8,7 @@ interface AppHeaderProps {
 export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   return (
     <header className="bg-card border-b">
-      <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center justify-between gap-3 px-3 sm:h-16 sm:px-4">
+      <div className="mx-auto flex h-14 w-full max-w-400 items-center justify-between gap-3 px-3 sm:h-16 sm:px-4">
         <div className="flex items-center gap-2">
           <Button
             type="button"
