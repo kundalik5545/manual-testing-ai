@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 interface UIState {
   activeSection: string;
@@ -26,11 +26,13 @@ export const useUIStore = create<UIState>((set) => ({
   modalData: null,
   filters: { priority: [], status: [], module: [] },
   searchQuery: '',
-  setActiveSection: (section) => set({ activeSection: section }),
-  toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
-  openModal: (modal, data) => set({ activeModal: modal, modalData: data }),
+  setActiveSection: (section: string) => set({ activeSection: section }),
+  toggleSidebar: () =>
+    set((s: UIState) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+  openModal: (modal: string, data?: any) =>
+    set({ activeModal: modal, modalData: data }),
   closeModal: () => set({ activeModal: null, modalData: null }),
-  setFilter: (type, values) =>
-    set((s) => ({ filters: { ...s.filters, [type]: values } })),
-  setSearchQuery: (query) => set({ searchQuery: query }),
+  setFilter: (type: string, values: string[]) =>
+    set((s: UIState) => ({ filters: { ...s.filters, [type]: values } })),
+  setSearchQuery: (query: string) => set({ searchQuery: query }),
 }));

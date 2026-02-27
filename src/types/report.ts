@@ -6,3 +6,5 @@ export interface ReportData {
   lastUpdated: string;
   // add more fields as needed based on JSON schema
 }
+
+export type Report = ReportData;

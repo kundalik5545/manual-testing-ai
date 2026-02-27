@@ -12,21 +12,19 @@ interface ReportState {
   updateTestCase: (id: string, data: Partial<TestCase>) => void;
 }
 
-export const useReportStore = create<ReportState>(
-  (set: StateCreator<ReportState>) => ({
-    reportData: null,
-    testCases: [],
-    isLoading: false,
-    loadReport: async (file: File) => {
-      // TODO: implement parsing logic
-    },
-    clearReport: () => set({ reportData: null, testCases: [] }),
-    updateTestCase: (id: string, data: Partial<TestCase>) => {
-      set((state) => ({
-        testCases: state.testCases.map((tc) =>
-          tc.id === id ? { ...tc, ...data } : tc,
-        ),
-      }));
-    },
-  }),
-);
+export const useReportStore = create<ReportState>((set) => ({
+  reportData: null,
+  testCases: [],
+  isLoading: false,
+  loadReport: async () => {
+    // TODO: implement parsing logic
+  },
+  clearReport: () => set({ reportData: null, testCases: [] }),
+  updateTestCase: (id: string, data: Partial<TestCase>) => {
+    set((state) => ({
+      testCases: state.testCases.map((tc: TestCase) =>
+        tc.id === id ? { ...tc, ...data } : tc,
+      ),
+    }));
+  },
+}));

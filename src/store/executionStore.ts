@@ -1,58 +1,54 @@
 import { create } from 'zustand';
-import { Status } from '@/types';
+import { Report } from '@/types/report';
+import { UUID } from '@/types/common';
 
-// helper type for the `set` function used by zustand
-import type { StateCreator } from 'zustand';
-
-// If you prefer a simple alias:
-// type SetState = (partial: Partial<ExecutionState> | ((state: ExecutionState) => Partial<ExecutionState>)) => void;
-
-interface ExecutionState {
-  testCaseStatuses: Record<string, Status>;
-  screenshots: Record<string, string[]>;
-  actualResults: Record<string, string>;
-  updateStatus: (testCaseId: string, status: Status) => Promise<void>;
-  addScreenshot: (testCaseId: string, image: string) => Promise<void>;
-  deleteScreenshot: (testCaseId: string, index: number) => Promise<void>;
-  updateActualResult: (testCaseId: string, result: string) => Promise<void>;
-  syncToIndexedDB: () => Promise<void>;
-  loadFromIndexedDB: () => Promise<void>;
+interface ReportState {
+  currentReport?: Report;
+  reports: Record<UUID, Report>;
+  setCurrent: (report: Report) => void;
+  addReport: (report: Report) => void;
+  updateReport: (id: UUID, patch: Partial<Report>) => void;
+  removeReport: (id: UUID) => void;
 }
 
-export const useExecutionStore = create<ExecutionState>((set, get, store) => ({
-  testCaseStatuses: {},
-  screenshots: {},
-  actualResults: {},
-  updateStatus: async (testCaseId: string, status: Status) => {
-    // TODO: persist status changes
+export const useReportStore = create<ReportState>((set) => ({
+  reports: {},
+  currentReport: undefined,
+
+  setCurrent: (report) => set({ currentReport: report }),
+
+  addReport: (report) =>
     set((state) => ({
-      testCaseStatuses: { ...state.testCaseStatuses, [testCaseId]: status },
-    }));
-  },
-  addScreenshot: async (testCaseId: string, image: string) => {
+      reports: { ...state.reports, [report.id]: report },
+    })),
+
+  updateReport: (id, patch) =>
     set((state) => {
-      const arr = state.screenshots[testCaseId] || [];
+      const existing = state.reports[id];
+      if (!existing) return state; // no-op if report does not exist
+
+      const updated = { ...existing, ...patch };
       return {
-        screenshots: { ...state.screenshots, [testCaseId]: [...arr, image] },
+        reports: {
+          ...state.reports,
+          [id]: updated,
+        },
+        currentReport:
+          state.currentReport?.id === id ? updated : state.currentReport,
       };
-    });
-  },
-  deleteScreenshot: async (testCaseId: string, index: number) => {
+    }),
+
+  removeReport: (id) =>
     set((state) => {
-      const arr = state.screenshots[testCaseId] || [];
-      arr.splice(index, 1);
-      return { screenshots: { ...state.screenshots, [testCaseId]: arr } };
-    });
-  },
-  updateActualResult: async (testCaseId: string, result: string) => {
-    set((state) => ({
-      actualResults: { ...state.actualResults, [testCaseId]: result },
-    }));
-  },
-  syncToIndexedDB: async () => {
-    // TODO: implement sync
-  },
-  loadFromIndexedDB: async () => {
-    // TODO: implement loading
-  },
+      if (!state.reports[id]) return state;
+
+      const nextReports = { ...state.reports };
+      delete nextReports[id];
+
+      return {
+        reports: nextReports,
+        currentReport:
+          state.currentReport?.id === id ? undefined : state.currentReport,
+      };
+    }),
 }));
