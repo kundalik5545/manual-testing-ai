@@ -848,6 +848,34 @@ function SummarySection() {
   }, [initialized, loadDefects]);
 
   const defectList = useMemo(() => Object.values(defects), [defects]);
+  const summaryMetrics = useMemo(() => {
+    const total = testCases.length;
+    const passed = testCases.filter(
+      (testCase) => testCase.status === 'Passed',
+    ).length;
+    const failed = testCases.filter(
+      (testCase) => testCase.status === 'Failed',
+    ).length;
+    const blocked = testCases.filter(
+      (testCase) => testCase.status === 'Blocked',
+    ).length;
+    const notExecuted = testCases.filter(
+      (testCase) => testCase.status === 'Not Executed',
+    ).length;
+    const executed = passed + failed + blocked;
+    const passRate = executed
+      ? `${((passed / executed) * 100).toFixed(1)}%`
+      : '0%';
+
+    return {
+      total,
+      passed,
+      failed,
+      blocked,
+      notExecuted,
+      passRate,
+    };
+  }, [testCases]);
 
   const handleExport = async (format: 'html' | 'pdf' | 'excel') => {
     setIsExporting(true);
@@ -899,7 +927,7 @@ function SummarySection() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-card rounded-md border p-3">
           <p className="text-muted-foreground text-xs">Test Cases</p>
-          <p className="text-sm font-medium">{testCases.length}</p>
+          <p className="text-sm font-medium">{summaryMetrics.total}</p>
         </div>
         <div className="bg-card rounded-md border p-3">
           <p className="text-muted-foreground text-xs">Defects</p>
@@ -907,21 +935,23 @@ function SummarySection() {
         </div>
         <div className="bg-card rounded-md border p-3">
           <p className="text-muted-foreground text-xs">Passed</p>
-          <p className="text-sm font-medium">
-            {
-              testCases.filter((testCase) => testCase.status === 'Passed')
-                .length
-            }
-          </p>
+          <p className="text-sm font-medium">{summaryMetrics.passed}</p>
         </div>
         <div className="bg-card rounded-md border p-3">
           <p className="text-muted-foreground text-xs">Failed</p>
-          <p className="text-sm font-medium">
-            {
-              testCases.filter((testCase) => testCase.status === 'Failed')
-                .length
-            }
-          </p>
+          <p className="text-sm font-medium">{summaryMetrics.failed}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Blocked</p>
+          <p className="text-sm font-medium">{summaryMetrics.blocked}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Not Executed</p>
+          <p className="text-sm font-medium">{summaryMetrics.notExecuted}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3 sm:col-span-2 lg:col-span-2">
+          <p className="text-muted-foreground text-xs">Pass Rate (Executed)</p>
+          <p className="text-sm font-medium">{summaryMetrics.passRate}</p>
         </div>
       </div>
 
@@ -1452,8 +1482,146 @@ function DefectLogSection() {
 }
 
 function SignOffSection() {
+  const reportData = useReportStore((state) => state.reportData);
+  const testCases = useReportStore((state) => state.testCases);
+  const defects = useDefectStore((state) => state.defects);
+
+  const signOff = reportData?.signOff;
+  const signOffCriteria = reportData?.signOffCriteria;
+  const overallTestResult = reportData?.overallTestResult;
+
+  const defectList = useMemo(() => Object.values(defects), [defects]);
+  const passed = testCases.filter(
+    (testCase) => testCase.status === 'Passed',
+  ).length;
+  const failed = testCases.filter(
+    (testCase) => testCase.status === 'Failed',
+  ).length;
+  const blocked = testCases.filter(
+    (testCase) => testCase.status === 'Blocked',
+  ).length;
+  const notExecuted = testCases.filter(
+    (testCase) => testCase.status === 'Not Executed',
+  ).length;
+
+  const maxLength = Math.max(
+    signOff?.role?.length ?? 0,
+    signOff?.name?.length ?? 0,
+    signOff?.signature?.length ?? 0,
+    signOff?.signedDate?.length ?? 0,
+  );
+
+  const signOffRows = Array.from({ length: maxLength }, (_, index) => ({
+    role: signOff?.role?.[index] ?? '-',
+    name: signOff?.name?.[index] ?? '-',
+    signature: signOff?.signature?.[index] ?? '-',
+    signedDate: signOff?.signedDate?.[index] ?? '-',
+  }));
+
+  const hasSignOffData =
+    signOffRows.length > 0 ||
+    Boolean(signOffCriteria?.criteriaDescription) ||
+    Boolean(signOffCriteria?.sourceReference) ||
+    Boolean(overallTestResult?.status) ||
+    Boolean(overallTestResult?.comment);
+
+  if (!hasSignOffData) {
+    return <EmptyState text="No sign-off data found in report." />;
+  }
+
   return (
-    <EmptyState text="Sign-off workflow will be implemented in a dedicated phase." />
+    <div className="space-y-4 text-sm">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Total Test Cases</p>
+          <p className="text-sm font-medium">{testCases.length}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Passed</p>
+          <p className="text-sm font-medium">{passed}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Failed</p>
+          <p className="text-sm font-medium">{failed}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Blocked</p>
+          <p className="text-sm font-medium">{blocked}</p>
+        </div>
+        <div className="bg-card rounded-md border p-3">
+          <p className="text-muted-foreground text-xs">Not Executed</p>
+          <p className="text-sm font-medium">{notExecuted}</p>
+        </div>
+      </div>
+
+      <div className="bg-card rounded-md border p-3">
+        <p className="text-muted-foreground text-xs">Total Defects</p>
+        <p className="text-sm font-medium">{defectList.length}</p>
+      </div>
+
+      {overallTestResult?.status || overallTestResult?.comment ? (
+        <article className="rounded-md border p-3">
+          <p className="font-medium">Overall Test Result</p>
+          {overallTestResult?.status ? (
+            <p className="mt-1">
+              <span className="font-medium">Status:</span>{' '}
+              {overallTestResult.status}
+            </p>
+          ) : null}
+          {overallTestResult?.comment ? (
+            <p className="text-muted-foreground mt-1">
+              {overallTestResult.comment}
+            </p>
+          ) : null}
+        </article>
+      ) : null}
+
+      {signOffCriteria?.criteriaDescription ||
+      signOffCriteria?.sourceReference ? (
+        <article className="rounded-md border p-3">
+          <p className="font-medium">Sign-off Criteria</p>
+          {signOffCriteria?.criteriaDescription ? (
+            <p className="text-muted-foreground mt-1">
+              {signOffCriteria.criteriaDescription}
+            </p>
+          ) : null}
+          {signOffCriteria?.sourceReference ? (
+            <p className="mt-2">
+              <span className="font-medium">Source:</span>{' '}
+              {signOffCriteria.sourceReference}
+            </p>
+          ) : null}
+        </article>
+      ) : null}
+
+      {signOffRows.length ? (
+        <div className="overflow-x-auto rounded-md border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-3 py-2 font-medium">Role</th>
+                <th className="px-3 py-2 font-medium">Name</th>
+                <th className="px-3 py-2 font-medium">Signature</th>
+                <th className="px-3 py-2 font-medium">Signed Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {signOffRows.map((row, index) => (
+                <tr
+                  key={`${row.role}-${row.name}-${index}`}
+                  className="border-t"
+                >
+                  <td className="px-3 py-2">{row.role}</td>
+                  <td className="px-3 py-2">{row.name}</td>
+                  <td className="px-3 py-2">{row.signature}</td>
+                  <td className="px-3 py-2">{row.signedDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </div>
   );
 }
 

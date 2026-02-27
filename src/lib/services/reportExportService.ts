@@ -59,6 +59,10 @@ function buildSummaryTableRows(payload: ExportPayload): string {
   const notExecuted = payload.testCases.filter(
     (testCase) => testCase.status === 'Not Executed',
   ).length;
+  const executed = passed + failed + blocked;
+  const passRate = executed
+    ? `${((passed / executed) * 100).toFixed(1)}%`
+    : '0%';
 
   return `
     <tr><td>Total Test Cases</td><td>${total}</td></tr>
@@ -66,6 +70,7 @@ function buildSummaryTableRows(payload: ExportPayload): string {
     <tr><td>Failed</td><td>${failed}</td></tr>
     <tr><td>Blocked</td><td>${blocked}</td></tr>
     <tr><td>Not Executed</td><td>${notExecuted}</td></tr>
+    <tr><td>Pass Rate (Executed)</td><td>${passRate}</td></tr>
     <tr><td>Total Defects</td><td>${payload.defects.length}</td></tr>
   `;
 }
@@ -167,6 +172,23 @@ export async function exportReportAsPdf(
   const { jsPDF } = await import('jspdf');
   const document = new jsPDF({ unit: 'pt', format: 'a4' });
 
+  const passed = payload.testCases.filter(
+    (testCase) => testCase.status === 'Passed',
+  ).length;
+  const failed = payload.testCases.filter(
+    (testCase) => testCase.status === 'Failed',
+  ).length;
+  const blocked = payload.testCases.filter(
+    (testCase) => testCase.status === 'Blocked',
+  ).length;
+  const notExecuted = payload.testCases.filter(
+    (testCase) => testCase.status === 'Not Executed',
+  ).length;
+  const executed = passed + failed + blocked;
+  const passRate = executed
+    ? `${((passed / executed) * 100).toFixed(1)}%`
+    : '0%';
+
   let y = 40;
   const lineHeight = 18;
 
@@ -190,6 +212,11 @@ export async function exportReportAsPdf(
   writeLine('');
 
   writeLine(`Total Test Cases: ${payload.testCases.length}`);
+  writeLine(`Passed: ${passed}`);
+  writeLine(`Failed: ${failed}`);
+  writeLine(`Blocked: ${blocked}`);
+  writeLine(`Not Executed: ${notExecuted}`);
+  writeLine(`Pass Rate (Executed): ${passRate}`);
   writeLine(`Total Defects: ${payload.defects.length}`);
   writeLine('');
 
@@ -223,6 +250,23 @@ export async function exportReportAsExcel(
   const XLSX = await import('xlsx');
   const workbook = XLSX.utils.book_new();
 
+  const passed = payload.testCases.filter(
+    (testCase) => testCase.status === 'Passed',
+  ).length;
+  const failed = payload.testCases.filter(
+    (testCase) => testCase.status === 'Failed',
+  ).length;
+  const blocked = payload.testCases.filter(
+    (testCase) => testCase.status === 'Blocked',
+  ).length;
+  const notExecuted = payload.testCases.filter(
+    (testCase) => testCase.status === 'Not Executed',
+  ).length;
+  const executed = passed + failed + blocked;
+  const passRate = executed
+    ? `${((passed / executed) * 100).toFixed(1)}%`
+    : '0%';
+
   const summaryRows = [
     { Metric: 'Module', Value: payload.reportData.moduleName },
     { Metric: 'Version', Value: payload.reportData.version },
@@ -233,6 +277,11 @@ export async function exportReportAsExcel(
     },
     { Metric: 'Exported At', Value: payload.exportedAt },
     { Metric: 'Total Test Cases', Value: payload.testCases.length },
+    { Metric: 'Passed', Value: passed },
+    { Metric: 'Failed', Value: failed },
+    { Metric: 'Blocked', Value: blocked },
+    { Metric: 'Not Executed', Value: notExecuted },
+    { Metric: 'Pass Rate (Executed)', Value: passRate },
     { Metric: 'Total Defects', Value: payload.defects.length },
   ];
 

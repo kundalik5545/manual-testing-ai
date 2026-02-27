@@ -56,6 +56,28 @@ export interface ReportData {
     testValue2?: string;
     description?: string;
   }>;
+  testSummary?: {
+    testExecutionMetrics?: {
+      pass?: { testCount?: string; percentage?: string };
+      fail?: { testCount?: string; percentage?: string };
+      blocked?: { testCount?: string; percentage?: string };
+      notExecuted?: { testCount?: string; percentage?: string };
+    };
+  };
+  overallTestResult?: {
+    status?: string;
+    comment?: string;
+  };
+  signOff?: {
+    role?: string[];
+    name?: string[];
+    signature?: string[];
+    signedDate?: string[];
+  };
+  signOffCriteria?: {
+    criteriaDescription?: string;
+    sourceReference?: string;
+  };
 }
 
 export type Report = ReportData;

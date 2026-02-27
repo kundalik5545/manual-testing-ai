@@ -93,8 +93,8 @@ export const reportInputSchema = z.object({
         })
         .optional(),
       businessRules: z.array(z.string()).optional(),
-      testDataRequirement: z.record(z.string()).optional(),
-      testEnvSetup: z.record(z.string()).optional(),
+      testDataRequirement: z.record(z.string(), z.string()).optional(),
+      testEnvSetup: z.record(z.string(), z.string()).optional(),
     })
     .optional(),
   sampleTestData: z
@@ -106,6 +106,58 @@ export const reportInputSchema = z.object({
         description: z.string().optional(),
       }),
     )
+    .optional(),
+  testSummary: z
+    .object({
+      testExecutionMetrics: z
+        .object({
+          pass: z
+            .object({
+              testCount: z.string().optional(),
+              percentage: z.string().optional(),
+            })
+            .optional(),
+          fail: z
+            .object({
+              testCount: z.string().optional(),
+              percentage: z.string().optional(),
+            })
+            .optional(),
+          blocked: z
+            .object({
+              testCount: z.string().optional(),
+              percentage: z.string().optional(),
+            })
+            .optional(),
+          notExecuted: z
+            .object({
+              testCount: z.string().optional(),
+              percentage: z.string().optional(),
+            })
+            .optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+  overallTestResult: z
+    .object({
+      status: z.string().optional(),
+      comment: z.string().optional(),
+    })
+    .optional(),
+  signOff: z
+    .object({
+      role: z.array(z.string()).optional(),
+      name: z.array(z.string()).optional(),
+      signature: z.array(z.string()).optional(),
+      signedDate: z.array(z.string()).optional(),
+    })
+    .optional(),
+  signOffCriteria: z
+    .object({
+      criteriaDescription: z.string().optional(),
+      sourceReference: z.string().optional(),
+    })
     .optional(),
 });
 

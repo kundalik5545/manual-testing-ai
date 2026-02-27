@@ -320,6 +320,10 @@ export async function combineReportData(
     testObjective: parsedMain.testObjective,
     testPrerequisite: parsedMain.testPrerequisite,
     sampleTestData: parsedMain.sampleTestData,
+    testSummary: parsedMain.testSummary,
+    overallTestResult: parsedMain.overallTestResult,
+    signOff: parsedMain.signOff,
+    signOffCriteria: parsedMain.signOffCriteria,
     databaseQueries: parsedMain.databaseQueries?.map((query) => ({
       ...query,
       sqlScript:
